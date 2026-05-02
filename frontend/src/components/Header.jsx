@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import '../assets/style/styles.scss';
 
-const Header = ({ onSearch, user, onLogout }) => {
+const Header = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -12,6 +14,11 @@ const Header = ({ onSearch, user, onLogout }) => {
       onSearch(searchQuery);
     }
     navigate('/?search=' + searchQuery);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   return (
@@ -23,7 +30,7 @@ const Header = ({ onSearch, user, onLogout }) => {
             <li><Link to="/about">О нас</Link></li>
             <li><Link to="/">Информация для заказчиков</Link></li>
             <li><Link to="/">Информация для исполнителей</Link></li>
-            {user && (
+            {isAuthenticated && (
               <li><Link to="/create-service">Предоставить услугу</Link></li>
             )}
           </ul>
@@ -51,13 +58,13 @@ const Header = ({ onSearch, user, onLogout }) => {
         </form>
 
         <div className="auth-buttons">
-          {user ? (
+          {isAuthenticated ? (
             <>
               <div className="auth-buttons__user">
-                <p>{user.username}</p>
+                <p>{user?.username || 'Пользователь'}</p>
               </div>
               <div className="auth-buttons__logout">
-                <button onClick={onLogout}>Выйти</button>
+                <button onClick={handleLogout}>Выйти</button>
               </div>
             </>
           ) : (

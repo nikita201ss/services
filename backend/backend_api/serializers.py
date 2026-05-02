@@ -66,13 +66,14 @@ class ServiceSerializer(serializers.ModelSerializer):
         required=False
     )
     category_name = serializers.CharField(source='category.name', read_only=True)
+    category_slug = serializers.CharField(source='category.slug', read_only=True)
     user_info = UserSerializer(source='user', read_only=True)
     main_image_url = serializers.SerializerMethodField()
     
     class Meta:
         model = Service
         fields = [
-            'id', 'name', 'slug', 'main_image', 'main_image_url', 'category', 'category_name',
+            'id', 'name', 'slug', 'main_image', 'main_image_url', 'category', 'category_name', 'category_slug',
             'phone_number', 'price', 'description', 'city', 'address',
             'created_at', 'updated_at', 'images', 'uploaded_images', 'user_info', 'user'
         ]

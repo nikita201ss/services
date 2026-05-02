@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../assets/style/styles.scss';
 
 const ServiceCard = ({ service }) => {
@@ -6,7 +7,7 @@ const ServiceCard = ({ service }) => {
     
     return (
         <div className="service-card">
-            <a href={`/service/${service.slug}`} className="service-card__link">
+            <Link to={`/service/${service.slug}`} className="service-card__link">
                 <div className="service-card__image">
                     <img
                         src={imageUrl}
@@ -24,7 +25,7 @@ const ServiceCard = ({ service }) => {
                         <p>{service.city || 'Город не указан'}</p>
                     </div>
                 </div>
-            </a>
+            </Link>
         </div>
     );
 };

@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -7,7 +6,8 @@
     font-family: 'Montserrat', sans-serif;
 }
 
-a, a:active {
+a,
+a:active {
     text-decoration: none;
     color: black;
 }
@@ -21,6 +21,7 @@ img {
     height: auto;
 }
 
+// шапка
 .header {
     font-size: 24px;
     align-items: center;
@@ -86,6 +87,7 @@ img {
         display: flex;
         border: none;
         cursor: pointer;
+        background: none;
     }
 }
 
@@ -146,6 +148,7 @@ img {
     }
 }
 
+// подвал
 .footer {
     margin-top: 500px;
     background-color: #17242B;
@@ -201,6 +204,7 @@ img {
     }
 }
 
+// категории
 .categories-section {
     margin-bottom: 100px;
 }
@@ -235,7 +239,6 @@ img {
         height: 100%;
 
         &.active {
-            
             background-color: #2A7A78;
             border-radius: 10px;
         }
@@ -262,6 +265,7 @@ img {
     }
 }
 
+// услуги
 .services-section {
     .services-header {
         display: flex;
@@ -352,8 +356,20 @@ img {
     }
 }
 
+// страница о нас
 .page-about {
     font-size: 24px;
+}
+
+.homepage {
+    &__container {
+        width: 95%;
+        margin: 0 2.5%;
+    }
+}
+
+.about-title {
+    margin: 0 0 30px 8%;
 }
 
 .about-text {
@@ -370,6 +386,7 @@ img {
     ul li {
         line-height: 2;
         list-style: circle;
+        margin-left: 30px;
     }
 }
 
@@ -377,6 +394,7 @@ img {
     border-radius: 20px;
     display: flex;
     width: 15%;
+    min-width: 200px;
     border: 3px solid #3AAFAA;
     justify-content: center;
     flex-direction: column;
@@ -388,27 +406,81 @@ img {
     display: flex;
     gap: 3%;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .about-image {
     display: flex;
     justify-content: center;
+    height: 60%;
+    
+    img {
+        max-width: 80%;
+        object-fit: contain;
+    }
 }
 
 .about-card-txt {
     text-align: center;
     display: flex;
     justify-content: center;
+    padding: 0 2%;
 }
 
 .why {
     margin: 25px 0;
 }
 
-.detail-img {
+
+
+
+
+
+// детальная страница услуги
+.way {
+    margin-left: 7.5%;
+    display: flex;
+    gap: 1%;
+    align-items: center;
+    margin-bottom: 30px;
+    
+    a, span {
+        font-size: 14px;
+    }
+}
+
+.sectors {
+    justify-content: center;
+    display: flex;
+    gap: 5%;
+    margin-top: 2%;
+    flex-wrap: wrap;
+}
+
+.images-detail {
+    width: 30%;
+    min-width: 300px;
+}
+
+.det-img {
     border-radius: 10px;
     border: 2px solid #3AAFAA;
     height: 375px;
+    overflow: hidden;
+    
+    .detail-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        object-fit: cover;
+    }
+}
+
+.extra-images {
+    margin-top: 3%;
+    display: flex;
+    gap: 5%;
+    flex-wrap: wrap;
 }
 
 .extra-img {
@@ -431,22 +503,17 @@ img {
     }
 }
 
-.way {
-    margin-left: 7.5%;
+.location2 {
+    margin: 10% 0;
     display: flex;
-    gap: 1%;
-}
-
-.sectors {
-    justify-content: center;
-    display: flex;
-    gap: 5%;
-    margin-top: 2%;
+    gap: 2%;
+    align-items: center;
 }
 
 .description {
     font-size: 22px;
     width: 50%;
+    min-width: 300px;
     display: flex;
     flex-direction: column;
     gap: 5%;
@@ -454,28 +521,7 @@ img {
 
 .detail-txt {
     width: 75%;
-}
-
-.detail-img {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-}
-
-.extra-images {
-    margin-top: 3%;
-    display: flex;
-    gap: 5%;
-}
-
-.location2 {
-    margin: 10% 0;
-    display: flex;
-    gap: 2%;
-}
-
-.images-detail {
-    width: 30%;
+    line-height: 1.6;
 }
 
 .related-services {
@@ -497,13 +543,25 @@ img {
 
     &:hover {
         background-color: #3AAFAA;
+        
+        .phone-text {
+            color: white;
+        }
     }
 }
 
 .phone-text {
     font-size: 20px;
+    transition: color 0.3s;
 }
 
+
+
+
+
+
+
+// форма услуги
 .service-form {
     width: 100%;
     display: flex;
@@ -582,80 +640,103 @@ img {
     height: 15px;
 }
 
-.messages {
-    margin: 40px 0;
-    display: flex;
-    justify-content: center;
-}
 
-.window {
-    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-    width: 650px;
-    height: 540px;
-    border-radius: 10px;
-    margin: 0 auto;
-    display: flex;
-}
 
+
+
+
+
+// Формы авторизации
+.window,
 .window-reg {
     -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
     -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
     box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
     width: 650px;
-    height: 680px;
     border-radius: 10px;
-    margin: 0 auto;
+    margin: 50px auto;
     display: flex;
-}
-
-.form-reg,
-.form-log {
-    font-size: 18px;
-    width: 85%;
-    border: 1px solid black;
-    padding-left: 2%;
-    border-radius: 20px;
-    height: 50px;
-    outline: none;
-    margin-top: 8px;
+    padding: 40px;
 }
 
 .forma {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 6%;
-}
-
-.title-win {
-    font-size: 20px;
-}
-
-.auth-links {
-    text-align: center;
-    margin: 0 auto;
-}
-
-.btn-submit {
-    cursor: pointer;
-    background-color: #DFF2F0;
-    border: 0;
-    border-radius: 14px;
-    font-size: 24px;
-    width: 60%;
-    height: 68px;
+    justify-content: space-between;
 }
 
 .group-auth {
     flex-direction: column;
     display: flex;
-    justify-content: center;
-    margin: 5% 0 0 5%;
+    margin-bottom: 25px;
+}
+
+.title-win {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.form-log,
+.form-reg {
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s;
+
+    &:focus {
+        border-color: #3AAFAA;
+    }
 }
 
 .btn-auth {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.btn-submit {
+    cursor: pointer;
+    background-color: #3AAFAA;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    width: 60%;
+    height: 50px;
+    color: white;
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: #2A7A78;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 20px;
+
+    a {
+        color: #3AAFAA;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+// cообщения
+.messages {
+    margin: 40px 0;
     display: flex;
     justify-content: center;
 }
@@ -666,13 +747,6 @@ img {
     font-size: 24px;
 }
 
-.error {
-    text-align: center;
-    padding: 50px;
-    font-size: 24px;
-    color: red;
-}
-
 .no-results {
     text-align: center;
     padding: 50px;
@@ -680,6 +754,28 @@ img {
     color: #666;
 }
 
+.error {
+    color: rgb(255, 0, 0);
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.error-message {
+    color: rgb(255, 0, 0);
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.pass {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+
+
+
+// адаптив
 @media (max-width: 1200px) {
     .categories-grid {
         width: 80%;
@@ -714,6 +810,7 @@ img {
     }
 
     .auth-buttons {
+
         &__login,
         &__register,
         &__logout,
@@ -721,7 +818,9 @@ img {
             width: 150px;
             height: 60px;
 
-            a, p, button {
+            a,
+            p,
+            button {
                 font-size: 18px;
             }
         }
@@ -763,5 +862,20 @@ img {
     .footer__blocks {
         flex-direction: column;
         gap: 30px;
+    }
+    
+    .sectors {
+        flex-direction: column;
+    }
+    
+    .images-detail,
+    .description {
+        width: 100%;
+    }
+    
+    .window,
+    .window-reg {
+        width: 90%;
+        padding: 20px;
     }
 }

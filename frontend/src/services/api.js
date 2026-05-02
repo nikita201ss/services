@@ -21,6 +21,7 @@ export const api = {
 
   async getServiceBySlug(slug) {
     const response = await fetch(`${API_URL}/services/${slug}/`);
+    if (!response.ok) throw new Error('Услуга не найдена');
     return response.json();
   }
 };
