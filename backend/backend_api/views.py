@@ -61,6 +61,9 @@ class ServiceCreateAPIView(generics.CreateAPIView):
     serializer_class = ServiceSerializer
     permission_classes = [permissions.IsAuthenticated]
     
+    def get_serializer_context(self):
+        return {'request': self.request}
+    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 

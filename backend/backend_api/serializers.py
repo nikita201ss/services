@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 from .models import Category, Service, ServiceImage
+from transliterate import translit
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -85,8 +87,27 @@ class ServiceSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.main_image.url)
         return obj.main_image.url if obj.main_image else None
     
+    def generate_unique_slug(self, name):
+        slug = translit(name, 'ru', reversed=True)
+        slug = slugify(slug)
+        
+        if not slug:
+            slug = slugify(name)
+        
+        original_slug = slug
+        counter = 1
+        while Service.objects.filter(slug=slug).exists():
+            slug = f"{original_slug}-{counter}"
+            counter += 1
+        return slug
+
     def create(self, validated_data):
         uploaded_images = validated_data.pop('uploaded_images', [])
+        
+        name = validated_data.get('name')
+        slug_value = self.generate_unique_slug(name)
+        validated_data['slug'] = slug_value
+        
         service = Service.objects.create(**validated_data)
         
         for image in uploaded_images:
@@ -96,6 +117,9 @@ class ServiceSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         uploaded_images = validated_data.pop('uploaded_images', [])
+        
+        if 'name' in validated_data and validated_data['name'] != instance.name:
+            validated_data['slug'] = self.generate_unique_slug(validated_data['name'])
         
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

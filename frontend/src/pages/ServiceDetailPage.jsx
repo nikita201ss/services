@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ServiceCard from '../components/ServiceCard';
 import { api } from '../services/api';
 import '../assets/style/styles.scss';
+import { formatPhoneNumber } from '../utils/formatPhone';
 
 const ServiceDetailPage = () => {
   const { slug } = useParams();
@@ -13,6 +14,11 @@ const ServiceDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [mainImage, setMainImage] = useState('');
   const [showPhone, setShowPhone] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const thumbnailsRef = useRef(null);
+  const [formattedPhone, setFormattedPhone] = useState('');
+
+
 
   const loadService = useCallback(async () => {
     setLoading(true);
@@ -20,13 +26,12 @@ const ServiceDetailPage = () => {
       const data = await api.getServiceBySlug(slug);
       setService(data);
       setMainImage(data.main_image_url || `http://localhost:8000${data.main_image}`);
-      
-      // Загрузка похожих услуг
+      setCurrentIndex(0);
+
       if (data.category) {
         const categorySlug = data.category.slug || data.category;
         const filters = { category: categorySlug };
         const related = await api.getServices(filters);
-        // Исключаем текущую услугу
         const filtered = related.filter(s => s.slug !== slug).slice(0, 4);
         setRelatedServices(filtered);
       }
@@ -41,8 +46,58 @@ const ServiceDetailPage = () => {
     loadService();
   }, [loadService]);
 
-  const changeImage = (imageSrc) => {
-    setMainImage(imageSrc);
+  const getAllImages = () => {
+    const images = [];
+    if (service?.main_image) {
+      images.push(service.main_image_url || `http://localhost:8000${service.main_image}`);
+    }
+    if (service?.images) {
+      service.images.forEach(img => {
+        const imgUrl = img.image_url || `http://localhost:8000${img.image}`;
+        images.push(imgUrl);
+      });
+    }
+    return images;
+  };
+
+  const allImages = getAllImages();
+  const totalImages = allImages.length;
+
+  useEffect(() => {
+
+    if (thumbnailsRef.current && totalImages > 4) {
+      const thumbnailElements = thumbnailsRef.current.children;
+      if (thumbnailElements[currentIndex]) {
+        thumbnailElements[currentIndex].scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
+        });
+      }
+    }
+  }, [currentIndex, totalImages]);
+
+  useEffect(() => {
+    if (service && service.phone_number) {
+      setFormattedPhone(formatPhoneNumber(service.phone_number));
+    }
+  }, [service]);
+
+  const prevImage = () => {
+    const newIndex = currentIndex === 0 ? totalImages - 1 : currentIndex - 1;
+    setCurrentIndex(newIndex);
+    setMainImage(allImages[newIndex]);
+  };
+
+  const nextImage = () => {
+    const newIndex = currentIndex === totalImages - 1 ? 0 : currentIndex + 1;
+    setCurrentIndex(newIndex);
+    setMainImage(allImages[newIndex]);
+  };
+
+  const selectThumbnail = (index) => {
+    setCurrentIndex(index);
+    setMainImage(allImages[index]);
   };
 
   const handlePhoneClick = () => {
@@ -76,19 +131,8 @@ const ServiceDetailPage = () => {
     );
   }
 
-  const allImages = [];
-  if (service.main_image) {
-    allImages.push(service.main_image_url || `http://localhost:8000${service.main_image}`);
-  }
-  if (service.images) {
-    service.images.forEach(img => {
-      const imgUrl = img.image_url || `http://localhost:8000${img.image}`;
-      allImages.push(imgUrl);
-    });
-  }
-
-  // Получение slug категории
   const categorySlug = service.category_slug || service.category?.slug || service.category;
+  const hasMultipleImages = totalImages > 1;
 
   return (
     <>
@@ -107,28 +151,60 @@ const ServiceDetailPage = () => {
 
           <div className="sectors">
             <div className="images-detail">
-              {mainImage && (
-                <div className="det-img">
-                  <img 
-                    id="mainImage" 
-                    src={mainImage} 
-                    alt={service.name} 
-                    className="detail-img"
-                  />
-                </div>
-              )}
 
-              {allImages.length > 1 && (
-                <div className="extra-images">
-                  {allImages.map((img, index) => (
-                    <img 
-                      key={index}
-                      src={img} 
-                      alt={`${service.name} ${index + 1}`} 
-                      className={`extra-img ${mainImage === img ? 'active' : ''}`}
-                      onClick={() => changeImage(img)}
+              <div className="det-img-container">
+                {hasMultipleImages && (
+                  <button
+                    className="nav-arrow nav-arrow--prev"
+                    onClick={prevImage}
+                    aria-label="Предыдущее изображение"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                )}
+
+                {mainImage && (
+                  <div className="det-img">
+                    <img
+                      id="mainImage"
+                      src={mainImage}
+                      alt={service.name}
+                      className="detail-img"
                     />
-                  ))}
+                  </div>
+                )}
+
+                {hasMultipleImages && (
+                  <button
+                    className="nav-arrow nav-arrow--next"
+                    onClick={nextImage}
+                    aria-label="Следующее изображение"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              {totalImages > 1 && (
+                <div className="thumbnails-wrapper">
+                  <div
+                    className="thumbnails"
+                    ref={thumbnailsRef}
+                  >
+                    {allImages.map((img, idx) => (
+                      <img
+                        key={idx}
+                        src={img}
+                        alt={`${service.name} ${idx + 1}`}
+                        className={`thumbnail ${currentIndex === idx ? 'active' : ''}`}
+                        onClick={() => selectThumbnail(idx)}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -142,12 +218,23 @@ const ServiceDetailPage = () => {
 
               <div className="phone-button" onClick={handlePhoneClick}>
                 {showPhone ? (
-                  <p className="phone-text">{service.phone_number}</p>
+                  <a href={`tel:${service.phone_number}`} className="phone-text">
+                    {formattedPhone}
+                  </a>
                 ) : (
-                  <p className="phone-text">Увидеть номер</p>
+                  <span className="phone-text">Увидеть номер</span>
                 )}
               </div>
+
+              {/* <div className="meeting-button" onClick={handlePhoneClick}>
+
+                <span className="phone-text">Договориться о встрече</span>
+              </div> */}
+
+
             </div>
+
+
 
             <div className="description">
               <h2>{service.name}</h2>
