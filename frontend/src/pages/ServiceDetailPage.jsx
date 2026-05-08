@@ -215,22 +215,22 @@ const ServiceDetailPage = () => {
                   <p>{service.address || 'Адрес не указан'}</p>
                 </div>
               </div>
+              <div className='group-buttons'>
+                <div className="phone-button" onClick={handlePhoneClick}>
+                  {showPhone ? (
+                    <a href={`tel:${service.phone_number}`} className="phone-text">
+                      {formattedPhone}
+                    </a>
+                  ) : (
+                    <span className="phone-text">Увидеть номер</span>
+                  )}
+                </div>
 
-              <div className="phone-button" onClick={handlePhoneClick}>
-                {showPhone ? (
-                  <a href={`tel:${service.phone_number}`} className="phone-text">
-                    {formattedPhone}
-                  </a>
-                ) : (
-                  <span className="phone-text">Увидеть номер</span>
-                )}
+                <div className="meeting-button" onClick={handlePhoneClick}>
+
+                  <span className="phone-text">Договориться о встрече</span>
+                </div>
               </div>
-
-              {/* <div className="meeting-button" onClick={handlePhoneClick}>
-
-                <span className="phone-text">Договориться о встрече</span>
-              </div> */}
-
 
             </div>
 
@@ -247,6 +247,15 @@ const ServiceDetailPage = () => {
               </div>
             </div>
           </div>
+
+
+          <div>
+
+            
+
+
+          </div>
+
 
           {relatedServices.length > 0 && (
             <div className="related-services">

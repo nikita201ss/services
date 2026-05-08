@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from transliterate import translit  # Добавьте этот импорт
+from transliterate import translit
 
 def validate_file_size(file):
     limit = 10 * 1024 * 1024
@@ -13,7 +13,6 @@ def validate_file_size(file):
         )
 
 def generate_unique_slug(model_instance, title, slug_field='slug'):
-    """Генерация уникального slug с поддержкой кириллицы"""
     # Транслитерация кириллицы в латиницу
     from transliterate import translit
     slug = translit(title, 'ru', reversed=True)
