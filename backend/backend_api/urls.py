@@ -16,4 +16,9 @@ urlpatterns = [
     path('auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/profile/', views.UserProfileAPIView.as_view(), name='profile'),
+
+    path('requests/create/', views.RequestCreateAPIView.as_view(), name='request-create'),
+    path('requests/received/', views.ReceivedRequestsAPIView.as_view(), name='requests-received'),
+    path('requests/sent/', views.SentRequestsAPIView.as_view(), name='requests-sent'),
+    path('requests/<int:pk>/update/', views.UpdateRequestStatusAPIView.as_view(), name='request-update'),
 ]

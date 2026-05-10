@@ -6,6 +6,7 @@ import ServiceCard from '../components/ServiceCard';
 import { api } from '../services/api';
 import '../assets/style/styles.scss';
 import { formatPhoneNumber } from '../utils/formatPhone';
+import { useAuth } from '../contexts/AuthContext';
 
 const ServiceDetailPage = () => {
   const { slug } = useParams();
@@ -18,8 +19,15 @@ const ServiceDetailPage = () => {
   const thumbnailsRef = useRef(null);
   const [formattedPhone, setFormattedPhone] = useState('');
 
+  const {isAuthenticated } = useAuth();
+  const [requestData, setRequestData] = useState({
+    description: '',
+    meeting_date: '',
+    phone_number: '',
+  });
 
-
+  const [submitting, setSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
   const loadService = useCallback(async () => {
     setLoading(true);
     try {
@@ -134,6 +142,75 @@ const ServiceDetailPage = () => {
   const categorySlug = service.category_slug || service.category?.slug || service.category;
   const hasMultipleImages = totalImages > 1;
 
+
+  const handleRequestInputChange = (e) => {
+    const { name, value } = e.target;
+    setRequestData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmitRequest = async () => {
+    if (!isAuthenticated) {
+      alert('Пожалуйста, войдите в аккаунт для отправки заявки');
+      return;
+    }
+    
+    if (!requestData.description.trim()) {
+      alert('Введите описание работ');
+      return;
+    }
+    
+    if (!requestData.meeting_date) {
+      alert('Выберите дату встречи');
+      return;
+    }
+    
+    if (!requestData.phone_number.trim()) {
+      alert('Введите номер телефона');
+      return;
+    }
+    
+    setSubmitting(true);
+    
+    try {
+      if (!service.user) {
+        throw new Error('Не указан исполнитель');
+      }
+      
+      const requestPayload = {
+        service: service.id,
+        executor: service.user,  // ID владельца услуги
+        description: requestData.description,
+        meeting_date: requestData.meeting_date,
+        phone_number: requestData.phone_number,
+      };
+      
+      console.log('Sending request:', requestPayload); // Для отладки
+      
+      await api.createRequest(requestPayload);
+      
+      setSubmitMessage('Заявка успешно отправлена!');
+      setRequestData({ description: '', meeting_date: '', phone_number: '' });
+      setTimeout(() => setSubmitMessage(''), 3000);
+    } catch (error) {
+      console.error('Ошибка отправки заявки:', error);
+      setSubmitMessage(error.response?.data?.message || 'Ошибка при отправке заявки');
+      setTimeout(() => setSubmitMessage(''), 3000);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+  
   return (
     <>
       <Header />
@@ -226,7 +303,7 @@ const ServiceDetailPage = () => {
                   )}
                 </div>
 
-                <div className="meeting-button" onClick={handlePhoneClick}>
+                <div className="meeting-button">
 
                   <span className="phone-text">Договориться о встрече</span>
                 </div>
@@ -239,7 +316,7 @@ const ServiceDetailPage = () => {
             <div className="description">
               <h2>{service.name}</h2>
               <p className="price">{service.price} руб.</p>
-              <p className="description-title">Описание</p>
+              <p className="description-title"><b>Описание</b></p>
               <div className="detail-txt">
                 {service.description?.split('\n').map((paragraph, idx) => (
                   <p key={idx}>{paragraph}</p>
@@ -249,11 +326,57 @@ const ServiceDetailPage = () => {
           </div>
 
 
-          <div>
+          <div className="contract">
+            <div className="contract__title">
+              <p>Создание заявки</p>
+            </div>
 
-            
+            {submitMessage && (
+              <div className={`contract__message ${submitMessage.includes('успешно') ? 'success' : 'error'}`}>
+                {submitMessage}
+              </div>
+            )}
 
+            <div className="contract__blocks">
+              <div className="contract__block">
+                <p>Укажите, что нужно сделать?</p>
+                <textarea
+                  name="description"
+                  rows="3"
+                  placeholder="Опишите задачи..."
+                  value={requestData.description}
+                  onChange={handleRequestInputChange}
+                />
+              </div>
 
+              <div className="contract__block">
+                <p>Выберите дату и время</p>
+                <input
+                  type="datetime-local"
+                  name="meeting_date"
+                  value={requestData.meeting_date}
+                  onChange={handleRequestInputChange}
+                />
+              </div>
+
+              <div className="contract__block">
+                <p>Укажите номер телефона для связи</p>
+                <input
+                  type="tel"
+                  name="phone_number"
+                  placeholder="+7 (XXX) XXX-XX-XX"
+                  value={requestData.phone_number}
+                  onChange={handleRequestInputChange}
+                />
+              </div>
+            </div>
+            <div className='block-btn'>
+              <div className="contract__btn" onClick={handleSubmitRequest}>
+                <p className="contract__btn__txt">
+                  {submitting ? 'Отправка...' : 'Отправить заявку'}
+                </p>
+              </div>
+            </div>
           </div>
 
 

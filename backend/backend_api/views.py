@@ -1,14 +1,12 @@
-from rest_framework import generics, permissions, filters, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import generics, permissions
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .models import Category, Service
+from .models import Category, Service, Request
 from .serializers import (
     CategorySerializer, ServiceSerializer, 
-    UserSerializer, RegisterSerializer
+    UserSerializer, RegisterSerializer, RequestUpdateSerializer, RequestSerializer
 )
+from rest_framework.response import Response
 
 class CategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.all()
@@ -78,6 +76,13 @@ class RegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    def create(self, request, *args, **kwargs):
+        print("Register endpoint called")
+        print("Request data:", request.data)
+        return super().create(request, *args, **kwargs)
+    
 
 class UserProfileAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
@@ -85,3 +90,57 @@ class UserProfileAPIView(generics.RetrieveUpdateAPIView):
     
     def get_object(self):
         return self.request.user
+    
+class UserRequestsAPIView(generics.ListAPIView):
+    serializer_class = RequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        return Request.objects.filter(executor=user) | Request.objects.filter(customer=user)
+
+
+class RequestCreateAPIView(generics.CreateAPIView):
+    serializer_class = RequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        serializer.save(customer=self.request.user)
+
+class ReceivedRequestsAPIView(generics.ListAPIView):
+    serializer_class = RequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Request.objects.filter(executor=self.request.user).order_by('-created_at')
+
+class SentRequestsAPIView(generics.ListAPIView):
+    serializer_class = RequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Request.objects.filter(customer=self.request.user).order_by('-created_at')
+
+class UpdateRequestStatusAPIView(generics.UpdateAPIView):
+    serializer_class = RequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Request.objects.all()
+    lookup_field = 'pk'
+    
+    def update(self, request, *args, **kwargs):
+        print("=== UPDATE REQUEST ===")
+        print("Request ID:", kwargs.get('pk'))
+        print("Data:", request.data)
+        
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        print("Updated status to:", serializer.instance.status)
+        
+        return Response(serializer.data)
+    
+    def perform_update(self, serializer):
+        serializer.save()

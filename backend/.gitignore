@@ -1,0 +1,23 @@
+
+**/__pycache__/
+/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*/migrations/__pycache__/
+*/config/__pycache__/
+
+.env
+
+backend/backend_api/migrations/__pycache__/
+backend/backend_api/__pycache__/
+backend/config/__pycache__/
+
+# Node modules
+node_modules/
+frontend/node_modules/
+
+# IDE
+.vscode/
+.idea/

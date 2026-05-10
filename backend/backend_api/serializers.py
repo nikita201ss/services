@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.utils.text import slugify
-from .models import Category, Service, ServiceImage
+from .models import Category, Service, ServiceImage, Request
 from transliterate import translit
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,21 +15,18 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name']
+        fields = ['username', 'password', 'password2']
     
     def validate(self, data):
         if data['password'] != data['password2']:
-            raise serializers.ValidationError("Пароли не совпадают")
+            raise serializers.ValidationError({"password2": "Пароли не совпадают"})
         return data
     
     def create(self, validated_data):
         validated_data.pop('password2')
         user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data.get('email', ''),
-            password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', '')
+            password=validated_data['password']
         )
         return user
 
@@ -130,3 +127,37 @@ class ServiceSerializer(serializers.ModelSerializer):
             ServiceImage.objects.create(service=instance, image=image)
         
         return instance
+    
+
+
+class RequestSerializer(serializers.ModelSerializer):
+    service_name = serializers.CharField(source='service.name', read_only=True)
+    customer_name = serializers.CharField(source='customer.username', read_only=True)
+    executor_name = serializers.CharField(source='executor.username', read_only=True)
+    service_slug = serializers.CharField(source='service.slug', read_only=True)
+    
+    class Meta:
+        model = Request
+        fields = [
+            'id', 'service', 'service_name', 'service_slug',
+            'customer', 'customer_name', 
+            'executor', 'executor_name',
+            'description', 'meeting_date', 'phone_number',
+            'status', 'rejection_reason', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'customer']
+    
+    def validate_meeting_date(self, value):
+        if not value:
+            raise serializers.ValidationError("Укажите дату встречи")
+        return value
+    
+    def validate_description(self, value):
+        if not value or len(value.strip()) < 5:
+            raise serializers.ValidationError("Описание должно содержать минимум 5 символов")
+        return value
+    
+class RequestUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Request
+        fields = ['status', 'rejection_reason']

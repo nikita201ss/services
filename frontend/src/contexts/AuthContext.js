@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('access_token');
       if (token) {
         try {
-          const decoded = jwtDecode(token);
+          jwtDecode(token);
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           
           const userData = await fetchUserData(token);

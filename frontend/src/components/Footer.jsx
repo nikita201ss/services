@@ -38,6 +38,7 @@ const Footer = () => {
             <nav>
               <ul>
                 <li><Link to="/profile">Личный кабинет</Link></li>
+                
               </ul>
             </nav>
           </div>

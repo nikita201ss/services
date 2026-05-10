@@ -61,7 +61,7 @@ const Header = ({ onSearch }) => {
           {isAuthenticated ? (
             <>
               <div className="auth-buttons__user">
-                <p>{user?.username || 'Пользователь'}</p>
+                <p><Link to="/profile">{user?.username || 'Пользователь'}</Link></p>
               </div>
               <div className="auth-buttons__logout">
                 <button onClick={handleLogout}>Выйти</button>

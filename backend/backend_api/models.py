@@ -14,7 +14,6 @@ def validate_file_size(file):
 
 def generate_unique_slug(model_instance, title, slug_field='slug'):
     # Транслитерация кириллицы в латиницу
-    from transliterate import translit
     slug = translit(title, 'ru', reversed=True)
     slug = slugify(slug)
     
@@ -92,3 +91,32 @@ class ServiceImage(models.Model):
         upload_to='services/extra/',
         validators=[validate_file_size]
     )
+
+
+
+class Request(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Ожидает'),
+        ('approved', 'Одобрено'),
+        ('rejected', 'Отклонено'),
+        ('cancelled', 'Отменено'),
+    )
+    
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='requests')
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_requests')
+    executor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_requests')
+    
+    description = models.TextField()
+    meeting_date = models.DateTimeField()
+    phone_number = models.CharField(max_length=20)
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    rejection_reason = models.TextField(blank=True, null=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Заявка от {self.customer.username} на {self.service.name}"
