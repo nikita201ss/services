@@ -144,3 +144,16 @@ class UpdateRequestStatusAPIView(generics.UpdateAPIView):
     
     def perform_update(self, serializer):
         serializer.save()
+
+
+class CalendarEventsAPIView(generics.ListAPIView):
+    serializer_class = RequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        return Request.objects.filter(
+            status='approved'
+        ).filter(
+            Q(customer=user) | Q(executor=user)
+        ).order_by('meeting_date')

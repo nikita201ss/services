@@ -30,8 +30,10 @@ const Header = ({ onSearch }) => {
             <li><Link to="/about">О нас</Link></li>
             <li><Link to="/">Информация для заказчиков</Link></li>
             <li><Link to="/">Информация для исполнителей</Link></li>
+            {isAuthenticated && <li><Link to="/calendar">Календарь</Link></li>}
             {isAuthenticated && (
               <li><Link to="/create-service">Предоставить услугу</Link></li>
+              
             )}
           </ul>
         </nav>

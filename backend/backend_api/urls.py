@@ -21,4 +21,6 @@ urlpatterns = [
     path('requests/received/', views.ReceivedRequestsAPIView.as_view(), name='requests-received'),
     path('requests/sent/', views.SentRequestsAPIView.as_view(), name='requests-sent'),
     path('requests/<int:pk>/update/', views.UpdateRequestStatusAPIView.as_view(), name='request-update'),
+    
+    path('requests/calendar/', views.CalendarEventsAPIView.as_view(), name='calendar'),
 ]

@@ -103,5 +103,24 @@ export const api = {
     }
 
     return data;
+  },
+
+
+  async getCalendarEvents() {
+    const token = localStorage.getItem('access_token');
+    if (!token) return [];
+
+    const response = await fetch(`${API_URL}/requests/calendar/`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    return data.results || data;
   }
+
 };
+

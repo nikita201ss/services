@@ -10,6 +10,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateServicePage from './pages/CreateServicePage';
 import Profile from './pages/Profile';
+import Calendar from './pages/Calendar';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/create-service" element={<CreateServicePage />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/calendar" element={<Calendar />} />
             </Route>
           </Routes>
         </div>
