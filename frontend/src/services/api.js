@@ -120,7 +120,60 @@ export const api = {
 
     const data = await response.json();
     return data.results || data;
+  },
+
+async getPendingServices() {
+  const token = localStorage.getItem('access_token');
+  if (!token) return [];
+  
+  const response = await fetch(`${API_URL}/services/pending/`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  
+  if (!response.ok) {
+    console.error('Error fetching pending services:', response.status);
+    return [];
   }
+  
+  const data = await response.json();
+  return data.results || data;
+},
+
+async moderateService(serviceId, status, rejectionReason = null) {
+  const token = localStorage.getItem('access_token');
+  const payload = { moderation_status: status };
+  if (rejectionReason) {
+    payload.moderation_rejection_reason = rejectionReason;
+  }
+  
+  const response = await fetch(`${API_URL}/services/${serviceId}/moderate/`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+  return response.json();
+},
+
+async getUserServices() {
+  const token = localStorage.getItem('access_token');
+  if (!token) return [];
+  
+  const response = await fetch(`${API_URL}/my-services/`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  
+  if (!response.ok) return [];
+  
+  const data = await response.json();
+  return data.results || data;
+},
 
 };
 

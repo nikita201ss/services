@@ -148,57 +148,56 @@ const ServiceDetailPage = () => {
     setRequestData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmitRequest = async () => {
-    if (!isAuthenticated) {
-      alert('Пожалуйста, войдите в аккаунт для отправки заявки');
-      return;
-    }
+const handleSubmitRequest = async () => {
+  if (!isAuthenticated) {
+    alert('Пожалуйста, войдите в аккаунт для отправки заявки');
+    return;
+  }
+  
+  if (!requestData.description.trim()) {
+    alert('Введите описание работ');
+    return;
+  }
+  
+  if (!requestData.meeting_date) {
+    alert('Выберите дату встречи');
+    return;
+  }
+  
+  if (!requestData.phone_number.trim()) {
+    alert('Введите номер телефона');
+    return;
+  }
+  
+  setSubmitting(true);
+  
+  try {
     
-    if (!requestData.description.trim()) {
-      alert('Введите описание работ');
-      return;
-    }
+    const localDateTime = requestData.meeting_date;
     
-    if (!requestData.meeting_date) {
-      alert('Выберите дату встречи');
-      return;
-    }
+    const requestPayload = {
+      service: service.id,
+      executor: service.user,
+      description: requestData.description,
+      meeting_date: localDateTime,
+      phone_number: requestData.phone_number,
+    };
     
-    if (!requestData.phone_number.trim()) {
-      alert('Введите номер телефона');
-      return;
-    }
+    console.log('Sending date:', localDateTime);
     
-    setSubmitting(true);
+    await api.createRequest(requestPayload);
     
-    try {
-      if (!service.user) {
-        throw new Error('Не указан исполнитель');
-      }
-      
-      const requestPayload = {
-        service: service.id,
-        executor: service.user,  // ID владельца услуги
-        description: requestData.description,
-        meeting_date: requestData.meeting_date,
-        phone_number: requestData.phone_number,
-      };
-      
-      console.log('Sending request:', requestPayload); // Для отладки
-      
-      await api.createRequest(requestPayload);
-      
-      setSubmitMessage('Заявка успешно отправлена!');
-      setRequestData({ description: '', meeting_date: '', phone_number: '' });
-      setTimeout(() => setSubmitMessage(''), 3000);
-    } catch (error) {
-      console.error('Ошибка отправки заявки:', error);
-      setSubmitMessage(error.response?.data?.message || 'Ошибка при отправке заявки');
-      setTimeout(() => setSubmitMessage(''), 3000);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    setSubmitMessage('Заявка успешно отправлена!');
+    setRequestData({ description: '', meeting_date: '', phone_number: '' });
+    setTimeout(() => setSubmitMessage(''), 3000);
+  } catch (error) {
+    console.error('Ошибка отправки заявки:', error);
+    setSubmitMessage(error.response?.data?.message || 'Ошибка при отправке заявки');
+    setTimeout(() => setSubmitMessage(''), 3000);
+  } finally {
+    setSubmitting(false);
+  }
+};
 
 
 

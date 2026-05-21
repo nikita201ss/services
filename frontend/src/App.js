@@ -11,6 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CreateServicePage from './pages/CreateServicePage';
 import Profile from './pages/Profile';
 import Calendar from './pages/Calendar';
+import ModerationPage from './pages/ModerationPage';
 
 function App() {
   return (
@@ -18,7 +19,6 @@ function App() {
       <Router>
         <div className="app">
           <Routes>
-            {/* Публичные маршруты */}
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/service/:slug" element={<ServiceDetailPage />} />
@@ -29,6 +29,7 @@ function App() {
               <Route path="/create-service" element={<CreateServicePage />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/calendar" element={<Calendar />} />
+              <Route path="/moderation" element={<ModerationPage />} />
             </Route>
           </Routes>
         </div>

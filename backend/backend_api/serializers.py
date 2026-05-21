@@ -7,15 +7,19 @@ from transliterate import translit
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
-
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser']
+        
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
     password2 = serializers.CharField(write_only=True)
     
     class Meta:
         model = User
-        fields = ['username', 'password', 'password2']
+        fields = ['username', 'password', 'password2', 'first_name', 'last_name']
+        extra_kwargs = {
+            'first_name': {'required': True},
+            'last_name': {'required': False},
+        }
     
     def validate(self, data):
         if data['password'] != data['password2']:
@@ -68,16 +72,18 @@ class ServiceSerializer(serializers.ModelSerializer):
     category_slug = serializers.CharField(source='category.slug', read_only=True)
     user_info = UserSerializer(source='user', read_only=True)
     main_image_url = serializers.SerializerMethodField()
+    moderation_status_display = serializers.CharField(source='get_moderation_status_display', read_only=True)
     
     class Meta:
         model = Service
         fields = [
             'id', 'name', 'slug', 'main_image', 'main_image_url', 'category', 'category_name', 'category_slug',
             'phone_number', 'price', 'description', 'city', 'address',
-            'created_at', 'updated_at', 'images', 'uploaded_images', 'user_info', 'user'
+            'created_at', 'updated_at', 'images', 'uploaded_images', 'user_info', 'user',
+            'moderation_status', 'moderation_status_display', 'moderation_rejection_reason'
         ]
-        read_only_fields = ['id', 'slug', 'created_at', 'updated_at', 'user']
-    
+        read_only_fields = ['id', 'slug', 'created_at', 'updated_at', 'user', 'moderation_status']
+
     def get_main_image_url(self, obj):
         request = self.context.get('request')
         if obj.main_image and request:
@@ -104,6 +110,8 @@ class ServiceSerializer(serializers.ModelSerializer):
         name = validated_data.get('name')
         slug_value = self.generate_unique_slug(name)
         validated_data['slug'] = slug_value
+        
+        validated_data['moderation_status'] = 'pending'
         
         service = Service.objects.create(**validated_data)
         

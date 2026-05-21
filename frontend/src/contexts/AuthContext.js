@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get('http://localhost:8000/api/auth/profile/', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      console.log('User data from API:', response.data);
       return response.data;
     } catch (error) {
       console.error('Ошибка получения данных пользователя:', error);
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }) => {
         try {
           jwtDecode(token);
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          
+
           const userData = await fetchUserData(token);
           setUser(userData);
         } catch (error) {
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const register = async (username, password1, password2) => {
+  const register = async (username, password1, password2, firstName = '', lastName = '') => {
     setError(null);
     try {
       const response = await axios.post('http://localhost:8000/api/auth/register/', {
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }) => {
         password: password1,
         password2
       });
-      
+
       if (response.data) {
         await login(username, password1);
         return true;
@@ -71,12 +72,12 @@ export const AuthProvider = ({ children }) => {
         username,
         password
       });
-      
+
       const { access, refresh } = response.data;
       localStorage.setItem('access_token', access);
       localStorage.setItem('refresh_token', refresh);
       axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-      
+
       const userData = await fetchUserData(access);
       setUser(userData);
       return true;

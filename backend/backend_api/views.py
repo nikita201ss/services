@@ -24,7 +24,7 @@ class ServiceListAPIView(generics.ListAPIView):
         return {'request': self.request}
     
     def get_queryset(self):
-        queryset = Service.objects.all().order_by('-created_at')
+        queryset = Service.objects.filter(moderation_status='approved').order_by('-created_at')
         
         category_slug = self.request.query_params.get('category')
         if category_slug:
@@ -70,7 +70,7 @@ class UserServiceListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return Service.objects.filter(user=self.request.user)
+        return Service.objects.filter(user=self.request.user).order_by('-created_at')
 
 class RegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -157,3 +157,33 @@ class CalendarEventsAPIView(generics.ListAPIView):
         ).filter(
             Q(customer=user) | Q(executor=user)
         ).order_by('meeting_date')
+    
+class ModerateServiceAPIView(generics.UpdateAPIView):
+    serializer_class = ServiceSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Service.objects.all()
+    lookup_field = 'pk'
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        new_status = request.data.get('moderation_status')
+        rejection_reason = request.data.get('moderation_rejection_reason', '')
+        
+        if new_status not in ['approved', 'rejected']:
+            return Response({'error': 'Неверный статус'}, status=400)
+        
+        instance.moderation_status = new_status
+        if new_status == 'rejected':
+            instance.moderation_rejection_reason = rejection_reason
+        instance.moderated_by = request.user
+        instance.save()
+        
+        return Response({'status': 'ok', 'message': f'Услуга {new_status}'})
+    
+    
+class PendingServicesAPIView(generics.ListAPIView):
+    serializer_class = ServiceSerializer
+    permission_classes = [permissions.IsAdminUser]
+    
+    def get_queryset(self):
+        return Service.objects.filter(moderation_status='pending').order_by('-created_at')

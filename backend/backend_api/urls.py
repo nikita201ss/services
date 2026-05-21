@@ -7,8 +7,11 @@ app_name = 'api'
 urlpatterns = [
     path('categories/', views.CategoryListAPIView.as_view(), name='categories'),
     
-    path('services/', views.ServiceListAPIView.as_view(), name='services'),
+    path('services/pending/', views.PendingServicesAPIView.as_view(), name='pending-services'),
     path('services/create/', views.ServiceCreateAPIView.as_view(), name='service-create'),
+    
+    path('services/', views.ServiceListAPIView.as_view(), name='services'),
+
     path('services/<slug:slug>/', views.ServiceDetailAPIView.as_view(), name='service-detail'),
     path('my-services/', views.UserServiceListAPIView.as_view(), name='my-services'),
     
@@ -23,4 +26,7 @@ urlpatterns = [
     path('requests/<int:pk>/update/', views.UpdateRequestStatusAPIView.as_view(), name='request-update'),
     
     path('requests/calendar/', views.CalendarEventsAPIView.as_view(), name='calendar'),
+
+
+    path('services/<int:pk>/moderate/', views.ModerateServiceAPIView.as_view(), name='moderate-service'),
 ]

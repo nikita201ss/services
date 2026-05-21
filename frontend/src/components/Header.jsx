@@ -33,12 +33,15 @@ const Header = ({ onSearch }) => {
             {isAuthenticated && <li><Link to="/calendar">Календарь</Link></li>}
             {isAuthenticated && (
               <li><Link to="/create-service">Предоставить услугу</Link></li>
-              
             )}
+            {user?.is_staff && (
+              <li><Link to="/moderation">Модерация</Link></li>
+            )}
+
           </ul>
         </nav>
       </header>
-      
+
       <div className="panel">
         <div className="panel__logo">
           <Link to="/">
@@ -62,9 +65,11 @@ const Header = ({ onSearch }) => {
         <div className="auth-buttons">
           {isAuthenticated ? (
             <>
+              <Link to="/profile">
               <div className="auth-buttons__user">
-                <p><Link to="/profile">{user?.username || 'Пользователь'}</Link></p>
+                <p>{user?.username || 'Пользователь'}</p>
               </div>
+              </Link>
               <div className="auth-buttons__logout">
                 <button onClick={handleLogout}>Выйти</button>
               </div>
