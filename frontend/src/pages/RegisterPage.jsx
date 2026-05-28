@@ -10,7 +10,6 @@ const RegisterPage = () => {
   const [fullName, setFullName] = useState('');
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
-  const [agreeTerms, setAgreeTerms] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
@@ -39,10 +38,6 @@ const RegisterPage = () => {
     
     if (password1 !== password2) {
       newErrors.password2 = 'Пароли не совпадают';
-    }
-    
-    if (!agreeTerms) {
-      newErrors.agreeTerms = 'Необходимо принять условия';
     }
     
     setErrors(newErrors);
@@ -164,9 +159,6 @@ const RegisterPage = () => {
                       <Link to="/consent" target="_blank">согласие на обработку персональных данных</Link>
                     </span>
                   </label>
-                  {errors.agreeTerms && (
-                    <div className="error">{errors.agreeTerms}</div>
-                  )}
                 </div>
               </div>
 

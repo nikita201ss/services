@@ -24,8 +24,9 @@ export const api = {
     const params = new URLSearchParams();
     if (filters.category) params.append('category', filters.category);
     if (filters.search) params.append('q', filters.search);
-    if (filters.minPrice) params.append('min_price', filters.minPrice);
-    if (filters.maxPrice) params.append('max_price', filters.maxPrice);
+    if (filters.min_price) params.append('min_price', filters.min_price);
+    if (filters.max_price) params.append('max_price', filters.max_price);
+    if (filters.city) params.append('city', filters.city);
     if (filters.page) params.append('page', filters.page);
 
     const response = await fetch(`${API_URL}/services/?${params}`);

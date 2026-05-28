@@ -38,7 +38,9 @@ class ServiceListAPIView(generics.ListAPIView):
         
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
-        
+        city = self.request.query_params.get('city')
+        if city:
+            queryset = queryset.filter(city__icontains=city)
         if min_price:
             queryset = queryset.filter(price__gte=min_price)
         if max_price:
