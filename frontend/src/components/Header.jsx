@@ -28,8 +28,8 @@ const Header = ({ onSearch }) => {
           <ul className="header__list">
             <li><Link to="/">Главная</Link></li>
             <li><Link to="/about">О нас</Link></li>
-            <li><Link to="/">Информация для заказчиков</Link></li>
-            <li><Link to="/">Информация для исполнителей</Link></li>
+            <li><Link to="/clients">Информация для заказчиков</Link></li>
+            <li><Link to="/performers">Информация для исполнителей</Link></li>
             {isAuthenticated && <li><Link to="/calendar">Календарь</Link></li>}
             {isAuthenticated && (
               <li><Link to="/create-service">Предоставить услугу</Link></li>
@@ -66,9 +66,9 @@ const Header = ({ onSearch }) => {
           {isAuthenticated ? (
             <>
               <Link to="/profile">
-              <div className="auth-buttons__user">
-                <p>{user?.username || 'Пользователь'}</p>
-              </div>
+                <div className="auth-buttons__user">
+                  <p>{user?.username || 'Пользователь'}</p>
+                </div>
               </Link>
               <div className="auth-buttons__logout">
                 <button onClick={handleLogout}>Выйти</button>

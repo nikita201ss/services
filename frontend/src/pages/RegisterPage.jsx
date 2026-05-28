@@ -7,8 +7,10 @@ import '../assets/style/styles.scss';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
+  const [fullName, setFullName] = useState('');
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
+  const [agreeTerms, setAgreeTerms] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
@@ -23,6 +25,12 @@ const RegisterPage = () => {
       newErrors.username = 'Логин должен содержать минимум 3 символа';
     }
     
+    if (!fullName.trim()) {
+      newErrors.fullName = 'Введите ваше имя или название организации';
+    } else if (fullName.length < 2) {
+      newErrors.fullName = 'Имя должно содержать минимум 2 символа';
+    }
+    
     if (!password1) {
       newErrors.password1 = 'Введите пароль';
     } else if (password1.length < 8) {
@@ -31,6 +39,10 @@ const RegisterPage = () => {
     
     if (password1 !== password2) {
       newErrors.password2 = 'Пароли не совпадают';
+    }
+    
+    if (!agreeTerms) {
+      newErrors.agreeTerms = 'Необходимо принять условия';
     }
     
     setErrors(newErrors);
@@ -47,7 +59,7 @@ const RegisterPage = () => {
     setLoading(true);
     
     try {
-      await register(username, password1, password2);
+      await register(username, password1, password2, fullName);
       navigate('/');
     } catch (err) {
       if (err.response?.data) {
@@ -75,7 +87,24 @@ const RegisterPage = () => {
 
               <div>
                 <div className="group-auth">
-                  <label htmlFor="username" className="title-win">Логин</label>
+                  <label htmlFor="fullName" className="title-win">Имя или название организации <span className="required">*</span></label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    className="form-reg"
+                    placeholder="Иван"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                  {errors.fullName && (
+                    <div className="error">
+                      {errors.fullName}
+                    </div>
+                  )}
+                </div>
+
+                <div className="group-auth">
+                  <label htmlFor="username" className="title-win">Логин <span className="required">*</span></label>
                   <input
                     type="text"
                     id="username"
@@ -92,7 +121,7 @@ const RegisterPage = () => {
                 </div>
 
                 <div className="group-auth">
-                  <label htmlFor="password1" className="title-win">Пароль</label>
+                  <label htmlFor="password1" className="title-win">Пароль <span className="required">*</span></label>
                   <input
                     type="password"
                     id="password1"
@@ -106,13 +135,10 @@ const RegisterPage = () => {
                       {errors.password1}
                     </div>
                   )}
-                  {/* <p className="pass">
-                    Пароль должен содержать минимум 8 символов
-                  </p> */}
                 </div>
 
                 <div className="group-auth">
-                  <label htmlFor="password2" className="title-win">Подтверждение пароля</label>
+                  <label htmlFor="password2" className="title-win">Подтверждение пароля <span className="required">*</span></label>
                   <input
                     type="password"
                     id="password2"
@@ -125,6 +151,21 @@ const RegisterPage = () => {
                     <div className="error">
                       {errors.password2}
                     </div>
+                  )}
+                </div>
+
+                <div className="group-auth checkbox-group">
+                  <label className="checkbox-label">
+                    <span>
+                      Нажимая кнопку «Зарегистрироваться», я принимаю условия{' '}
+                      <Link to="/terms" target="_blank">Пользовательского соглашения</Link>,{' '}
+                      <Link to="/privacy" target="_blank">Политики конфиденциальности</Link>{' '}
+                      и даю{' '}
+                      <Link to="/consent" target="_blank">согласие на обработку персональных данных</Link>
+                    </span>
+                  </label>
+                  {errors.agreeTerms && (
+                    <div className="error">{errors.agreeTerms}</div>
                   )}
                 </div>
               </div>

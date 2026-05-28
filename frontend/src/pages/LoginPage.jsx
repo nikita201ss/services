@@ -22,7 +22,7 @@ const LoginPage = () => {
       await login(username, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Неверный логин или пароль');
+      setError(err.response?.data?.detail || 'Проверьте логин или пароль');
     } finally {
       setLoading(false);
     }

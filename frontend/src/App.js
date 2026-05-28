@@ -12,6 +12,11 @@ import CreateServicePage from './pages/CreateServicePage';
 import Profile from './pages/Profile';
 import Calendar from './pages/Calendar';
 import ModerationPage from './pages/ModerationPage';
+import ClientsPage from './pages/ClientsPage';
+import PerformersPage from './pages/PerformersPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import ConsentPage from './pages/ConsentPage';
 
 function App() {
   return (
@@ -24,7 +29,14 @@ function App() {
             <Route path="/service/:slug" element={<ServiceDetailPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            
+            <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/performers" element={<PerformersPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/consent" element={<ConsentPage />} />
+
+
+
             <Route element={<ProtectedRoute />}>
               <Route path="/create-service" element={<CreateServicePage />} />
               <Route path="/profile" element={<Profile />} />

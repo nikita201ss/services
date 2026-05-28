@@ -18,8 +18,10 @@ const ServiceDetailPage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const thumbnailsRef = useRef(null);
   const [formattedPhone, setFormattedPhone] = useState('');
+  const [formErrors, setFormErrors] = useState({});
+  const [showContractForm, setShowContractForm] = useState(false);
 
-  const {isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [requestData, setRequestData] = useState({
     description: '',
     meeting_date: '',
@@ -28,6 +30,7 @@ const ServiceDetailPage = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+
   const loadService = useCallback(async () => {
     setLoading(true);
     try {
@@ -72,7 +75,6 @@ const ServiceDetailPage = () => {
   const totalImages = allImages.length;
 
   useEffect(() => {
-
     if (thumbnailsRef.current && totalImages > 4) {
       const thumbnailElements = thumbnailsRef.current.children;
       if (thumbnailElements[currentIndex]) {
@@ -112,6 +114,80 @@ const ServiceDetailPage = () => {
     setShowPhone(true);
   };
 
+  const handleRequestInputChange = (e) => {
+    const { name, value } = e.target;
+    setRequestData(prev => ({ ...prev, [name]: value }));
+    if (formErrors[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleSubmitRequest = async () => {
+    setFormErrors({});
+
+    if (!isAuthenticated) {
+      setFormErrors({ auth: 'Пожалуйста, войдите в аккаунт для отправки заявки' });
+      return;
+    }
+
+    const errors = {};
+
+    if (!requestData.description.trim()) {
+      errors.description = 'Опишите, что нужно сделать (минимум 5 символов)';
+    } else if (requestData.description.trim().length < 5) {
+      errors.description = 'Описание должно содержать минимум 5 символов (сейчас ' + requestData.description.trim().length + ' символов)';
+    }
+
+    if (!requestData.meeting_date) {
+      errors.meeting_date = 'Выберите дату и время встречи';
+    }
+
+    if (!requestData.phone_number.trim()) {
+      errors.phone_number = 'Введите номер телефона';
+    } else if (requestData.phone_number.replace(/\D/g, '').length < 11) {
+      const currentLength = requestData.phone_number.replace(/\D/g, '').length;
+      errors.phone_number = 'Введите полный номер телефона (нужно 11 цифр, сейчас ' + currentLength + ')';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const requestPayload = {
+        service: service.id,
+        executor: service.user,
+        description: requestData.description,
+        meeting_date: requestData.meeting_date,
+        phone_number: requestData.phone_number.replace(/\D/g, ''),
+      };
+
+      await api.createRequest(requestPayload);
+
+      setSubmitMessage('Заявка успешно отправлена');
+      setRequestData({ description: '', meeting_date: '', phone_number: '' });
+      setTimeout(() => setSubmitMessage(''), 3000);
+      setTimeout(() => setShowContractForm(false), 2000);
+    } catch (error) {
+      console.error('Ошибка отправки заявки:', error);
+      setSubmitMessage('Ошибка при отправке заявки');
+      setTimeout(() => setSubmitMessage(''), 3000);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const toggleContractForm = () => {
+    setShowContractForm(!showContractForm);
+    if (!showContractForm) {
+      setFormErrors({});
+      setSubmitMessage('');
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -142,74 +218,8 @@ const ServiceDetailPage = () => {
   const categorySlug = service.category_slug || service.category?.slug || service.category;
   const hasMultipleImages = totalImages > 1;
 
+  const executorName = service.user_info?.first_name;
 
-  const handleRequestInputChange = (e) => {
-    const { name, value } = e.target;
-    setRequestData(prev => ({ ...prev, [name]: value }));
-  };
-
-const handleSubmitRequest = async () => {
-  if (!isAuthenticated) {
-    alert('Пожалуйста, войдите в аккаунт для отправки заявки');
-    return;
-  }
-  
-  if (!requestData.description.trim()) {
-    alert('Введите описание работ');
-    return;
-  }
-  
-  if (!requestData.meeting_date) {
-    alert('Выберите дату встречи');
-    return;
-  }
-  
-  if (!requestData.phone_number.trim()) {
-    alert('Введите номер телефона');
-    return;
-  }
-  
-  setSubmitting(true);
-  
-  try {
-    
-    const localDateTime = requestData.meeting_date;
-    
-    const requestPayload = {
-      service: service.id,
-      executor: service.user,
-      description: requestData.description,
-      meeting_date: localDateTime,
-      phone_number: requestData.phone_number,
-    };
-    
-    console.log('Sending date:', localDateTime);
-    
-    await api.createRequest(requestPayload);
-    
-    setSubmitMessage('Заявка успешно отправлена!');
-    setRequestData({ description: '', meeting_date: '', phone_number: '' });
-    setTimeout(() => setSubmitMessage(''), 3000);
-  } catch (error) {
-    console.error('Ошибка отправки заявки:', error);
-    setSubmitMessage(error.response?.data?.message || 'Ошибка при отправке заявки');
-    setTimeout(() => setSubmitMessage(''), 3000);
-  } finally {
-    setSubmitting(false);
-  }
-};
-
-
-
-
-
-
-
-
-
-
-
-  
   return (
     <>
       <Header />
@@ -227,7 +237,6 @@ const handleSubmitRequest = async () => {
 
           <div className="sectors">
             <div className="images-detail">
-
               <div className="det-img-container">
                 {hasMultipleImages && (
                   <button
@@ -267,10 +276,7 @@ const handleSubmitRequest = async () => {
 
               {totalImages > 1 && (
                 <div className="thumbnails-wrapper">
-                  <div
-                    className="thumbnails"
-                    ref={thumbnailsRef}
-                  >
+                  <div className="thumbnails" ref={thumbnailsRef}>
                     {allImages.map((img, idx) => (
                       <img
                         key={idx}
@@ -285,12 +291,20 @@ const handleSubmitRequest = async () => {
               )}
 
               <div className="location2">
-                <img src="/static/icon/pin.svg" alt="pin" className="pin" />
-                <div>
-                  <p>{service.city || 'Город не указан'}</p>
-                  <p>{service.address || 'Адрес не указан'}</p>
+                <div className="location2__info">
+                  <img src="/static/icon/pin.svg" alt="pin" className="pin" />
+                  <div>
+                    <p>{service.city || 'Город не указан'}</p>
+                    <p>{service.address || 'Адрес не указан'}</p>
+                  </div>
                 </div>
+                {executorName && (
+                  <div className="executor-info">
+                    <p>{executorName}</p>
+                  </div>
+                )}
               </div>
+
               <div className='group-buttons'>
                 <div className="phone-button" onClick={handlePhoneClick}>
                   {showPhone ? (
@@ -302,15 +316,13 @@ const handleSubmitRequest = async () => {
                   )}
                 </div>
 
-                <div className="meeting-button">
-
-                  <span className="phone-text">Договориться о встрече</span>
+                <div className="meeting-button" onClick={toggleContractForm}>
+                  <span className="phone-text">
+                    {showContractForm ? 'Скрыть форму' : 'Договориться о встрече'}
+                  </span>
                 </div>
               </div>
-
             </div>
-
-
 
             <div className="description">
               <h2>{service.name}</h2>
@@ -324,60 +336,104 @@ const handleSubmitRequest = async () => {
             </div>
           </div>
 
+          {showContractForm && (
+            <div className="contract">
+              <div className="contract__title">
+                <p>Создание заявки</p>
+              </div>
 
-          <div className="contract">
-            <div className="contract__title">
-              <p>Создание заявки</p>
+              {formErrors.auth && (
+                <div className="contract__message error">
+                  {formErrors.auth}
+                </div>
+              )}
+
+              {submitMessage && (
+                <div className={`contract__message ${submitMessage.includes('успешно') ? 'success' : 'error'}`}>
+                  {submitMessage}
+                </div>
+              )}
+
+              <div className="contract__blocks">
+                <div className="contract__block">
+                  <p>Укажите, что нужно сделать? <span className="required">*</span></p>
+                  <textarea
+                    name="description"
+                    rows="3"
+                    placeholder="Опишите задачи (минимум 5 символов)..."
+                    value={requestData.description}
+                    onChange={handleRequestInputChange}
+                    className={formErrors.description ? 'error-input' : ''}
+                  />
+                  {formErrors.description && (
+                    <div className="error-message">{formErrors.description}</div>
+                  )}
+                </div>
+
+                <div className="contract__block">
+                  <p>Выберите дату и время <span className="required">*</span></p>
+                  <input
+                    type="datetime-local"
+                    name="meeting_date"
+                    value={requestData.meeting_date}
+                    onChange={handleRequestInputChange}
+                    className={formErrors.meeting_date ? 'error-input' : ''}
+                  />
+                  {formErrors.meeting_date && (
+                    <div className="error-message">{formErrors.meeting_date}</div>
+                  )}
+                </div>
+
+                <div className="contract__block">
+                  <p>Укажите номер телефона для связи <span className="required">*</span></p>
+                  <input
+                    type="tel"
+                    name="phone_number"
+                    placeholder="+7 (___) ___-__-__"
+                    value={requestData.phone_number}
+                    onChange={(e) => {
+                      let value = e.target.value;
+                      const numbers = value.replace(/\D/g, '');
+
+                      let formatted = '';
+                      if (numbers.length > 0) {
+                        formatted = '+7';
+                        if (numbers.length > 1) {
+                          formatted += ` (${numbers.slice(1, 4)}`;
+                        }
+                        if (numbers.length >= 4) {
+                          formatted += `) ${numbers.slice(4, 7)}`;
+                        }
+                        if (numbers.length >= 7) {
+                          formatted += `-${numbers.slice(7, 9)}`;
+                        }
+                        if (numbers.length >= 9) {
+                          formatted += `-${numbers.slice(9, 11)}`;
+                        }
+                      }
+
+                      setRequestData(prev => ({ ...prev, phone_number: formatted }));
+                      if (formErrors.phone_number) {
+                        setFormErrors(prev => ({ ...prev, phone_number: '' }));
+                      }
+                    }}
+                    className={formErrors.phone_number ? 'error-input' : ''}
+                  />
+                  {formErrors.phone_number && (
+                    <div className="error-message">{formErrors.phone_number}</div>
+                  )}
+                </div>
+              </div>
+
+              <div className='block-btn'>
+                <div className={`contract__btn ${submitting ? 'loading' : ''}`} onClick={handleSubmitRequest}>
+                  <p className="contract__btn__txt">
+                    {submitting ? 'Отправка...' : 'Отправить заявку'}
+                  </p>
+                </div>
+              </div>
             </div>
-
-            {submitMessage && (
-              <div className={`contract__message ${submitMessage.includes('успешно') ? 'success' : 'error'}`}>
-                {submitMessage}
-              </div>
-            )}
-
-            <div className="contract__blocks">
-              <div className="contract__block">
-                <p>Укажите, что нужно сделать?</p>
-                <textarea
-                  name="description"
-                  rows="3"
-                  placeholder="Опишите задачи..."
-                  value={requestData.description}
-                  onChange={handleRequestInputChange}
-                />
-              </div>
-
-              <div className="contract__block">
-                <p>Выберите дату и время</p>
-                <input
-                  type="datetime-local"
-                  name="meeting_date"
-                  value={requestData.meeting_date}
-                  onChange={handleRequestInputChange}
-                />
-              </div>
-
-              <div className="contract__block">
-                <p>Укажите номер телефона для связи</p>
-                <input
-                  type="tel"
-                  name="phone_number"
-                  placeholder="+7 (XXX) XXX-XX-XX"
-                  value={requestData.phone_number}
-                  onChange={handleRequestInputChange}
-                />
-              </div>
-            </div>
-            <div className='block-btn'>
-              <div className="contract__btn" onClick={handleSubmitRequest}>
-                <p className="contract__btn__txt">
-                  {submitting ? 'Отправка...' : 'Отправить заявку'}
-                </p>
-              </div>
-            </div>
-          </div>
-
+          )}
 
           {relatedServices.length > 0 && (
             <div className="related-services">

@@ -11,8 +11,11 @@ const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [nextPageUrl, setNextPageUrl] = useState(null);
+  const [hasMore, setHasMore] = useState(false);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -23,31 +26,55 @@ const HomePage = () => {
     }
   }, []);
 
-  const loadServices = useCallback(async () => {
-    setLoading(true);
+  const loadServices = useCallback(async (isLoadMore = false) => {
+    if (!isLoadMore) {
+      setLoading(true);
+      setServices([]);
+      setNextPageUrl(null);
+    } else {
+      setLoadingMore(true);
+    }
+    
     try {
       const filters = {
         category: searchParams.get('category'),
         search: searchParams.get('search'),
         minPrice: searchParams.get('min_price'),
-        maxPrice: searchParams.get('max_price')
+        maxPrice: searchParams.get('max_price'),
+        page: isLoadMore && nextPageUrl ? new URL(nextPageUrl).searchParams.get('page') : 1
       };
-      const data = await api.getServices(filters);
-      setServices(data);
+      
+      const response = await api.getServicesWithPagination(filters);
+      
+      if (isLoadMore) {
+        setServices(prev => [...prev, ...response.results]);
+      } else {
+        setServices(response.results);
+      }
+      
+      setNextPageUrl(response.next);
+      setHasMore(!!response.next);
     } catch (error) {
       console.error('Ошибка загрузки услуг:', error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
-  }, [searchParams]);
+  }, [searchParams, nextPageUrl]);
+
+  const loadMore = () => {
+    if (hasMore && !loadingMore) {
+      loadServices(true);
+    }
+  };
 
   useEffect(() => {
     loadCategories();
   }, [loadCategories]);
 
   useEffect(() => {
-    loadServices();
-  }, [loadServices]);
+    loadServices(false);
+  }, [searchParams]);
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
@@ -111,11 +138,25 @@ const HomePage = () => {
             {loading ? (
               <div className="loading">Загрузка...</div>
             ) : (
-              <div className="services-grid">
-                {services.map(service => (
-                  <ServiceCard key={service.id} service={service} />
-                ))}
-              </div>
+              <>
+                <div className="services-grid">
+                  {services.map(service => (
+                    <ServiceCard key={service.id} service={service} />
+                  ))}
+                </div>
+
+                {hasMore && (
+                  <div className="load-more-container">
+                    <button 
+                      className="load-more-btn" 
+                      onClick={loadMore}
+                      disabled={loadingMore}
+                    >
+                      {loadingMore ? 'Загрузка...' : 'Показать ещё'}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
 
             {!loading && services.length === 0 && (

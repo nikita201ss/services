@@ -43,7 +43,6 @@ const Profile = () => {
   const loadUserServices = async () => {
     try {
       const services = await api.getUserServices();
-      console.log('Loaded user services:', services);
       setUserServices(Array.isArray(services) ? services : []);
     } catch (error) {
       console.error('Ошибка загрузки услуг:', error);
@@ -104,6 +103,8 @@ const Profile = () => {
     return `${day}.${month}.${year} ${time}`;
   };
 
+  const displayName = user?.first_name || user?.username;
+
   if (!isAuthenticated) {
     return (
       <>
@@ -129,7 +130,7 @@ const Profile = () => {
         <div className="profile-container">
           <div className="profile-header">
             <h1>Личный кабинет</h1>
-            <p className="profile-username">{user?.username}</p>
+            <p className="profile-username">{displayName}</p>
           </div>
 
           <div className="profile-tabs">
@@ -177,6 +178,7 @@ const Profile = () => {
                   </div>
 
                   <div className="request-details">
+                    <p><strong>Исполнитель:</strong> {service.user_info?.first_name || service.user_info?.username}</p>
                     <p><strong>Категория:</strong> {service.category_name}</p>
                     <p><strong>Цена:</strong> {service.price} руб.</p>
                     <p><strong>Город:</strong> {service.city}</p>
@@ -247,14 +249,14 @@ const Profile = () => {
                         onClick={() => handleApprove(request.id)}
                         disabled={updating}
                       >
-                        {updating ? 'Обработка...' : 'Одобрить'}
+                        {'Одобрить'}
                       </button>
                       <button
                         className="btn-reject"
                         onClick={() => setRejectModal({ show: true, requestId: request.id })}
                         disabled={updating}
                       >
-                        {updating ? 'Обработка...' : 'Отклонить'}
+                        {'Отклонить'}
                       </button>
                     </div>
                   )}

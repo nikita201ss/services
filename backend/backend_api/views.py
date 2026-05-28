@@ -82,7 +82,6 @@ class RegisterAPIView(generics.CreateAPIView):
         print("Register endpoint called")
         print("Request data:", request.data)
         return super().create(request, *args, **kwargs)
-    
 
 class UserProfileAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer

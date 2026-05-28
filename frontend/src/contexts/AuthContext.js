@@ -12,13 +12,20 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const fetchUserData = async (token) => {
+    if (!token) return null;
+
     try {
       const response = await axios.get('http://localhost:8000/api/auth/profile/', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      console.log('User data from API:', response.data);
       return response.data;
     } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        delete axios.defaults.headers.common['Authorization'];
+        return null;
+      }
       console.error('Ошибка получения данных пользователя:', error);
       return null;
     }
@@ -27,18 +34,29 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('access_token');
-      if (token) {
-        try {
-          jwtDecode(token);
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
-          const userData = await fetchUserData(token);
-          setUser(userData);
-        } catch (error) {
-          console.error('Ошибка декодирования токена:', error);
+      try {
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+
+        if (decoded.exp < currentTime) {
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
+          setLoading(false);
+          return;
         }
+
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        const userData = await fetchUserData(token);
+        setUser(userData);
+      } catch (error) {
+        console.error('Ошибка декодирования токена:', error);
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
       }
       setLoading(false);
     };
@@ -46,13 +64,14 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const register = async (username, password1, password2, firstName = '', lastName = '') => {
+  const register = async (username, password1, password2, fullName) => {
     setError(null);
     try {
       const response = await axios.post('http://localhost:8000/api/auth/register/', {
         username,
         password: password1,
-        password2
+        password2,
+        first_name: fullName, 
       });
 
       if (response.data) {

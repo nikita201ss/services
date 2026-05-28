@@ -19,6 +19,30 @@ export const api = {
     return data.results || [];
   },
 
+
+  async getServicesWithPagination(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.category) params.append('category', filters.category);
+    if (filters.search) params.append('q', filters.search);
+    if (filters.minPrice) params.append('min_price', filters.minPrice);
+    if (filters.maxPrice) params.append('max_price', filters.maxPrice);
+    if (filters.page) params.append('page', filters.page);
+
+    const response = await fetch(`${API_URL}/services/?${params}`);
+    const data = await response.json();
+    return {
+      results: data.results || [],
+      count: data.count || 0,
+      next: data.next,
+      previous: data.previous
+    };
+  },
+
+
+
+
+
+
   async getServiceBySlug(slug) {
     const response = await fetch(`${API_URL}/services/${slug}/`);
     if (!response.ok) throw new Error('Услуга не найдена');
@@ -83,8 +107,6 @@ export const api = {
       payload.rejection_reason = rejectionReason;
     }
 
-    console.log('Updating request:', requestId, 'with payload:', payload);
-
     const response = await fetch(`${API_URL}/requests/${requestId}/update/`, {
       method: 'PATCH',
       headers: {
@@ -94,9 +116,7 @@ export const api = {
       body: JSON.stringify(payload)
     });
 
-    console.log('Response status:', response.status);
     const data = await response.json();
-    console.log('Response data:', data);
 
     if (!response.ok) {
       throw new Error(JSON.stringify(data));
@@ -122,58 +142,58 @@ export const api = {
     return data.results || data;
   },
 
-async getPendingServices() {
-  const token = localStorage.getItem('access_token');
-  if (!token) return [];
-  
-  const response = await fetch(`${API_URL}/services/pending/`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  
-  if (!response.ok) {
-    console.error('Error fetching pending services:', response.status);
-    return [];
-  }
-  
-  const data = await response.json();
-  return data.results || data;
-},
+  async getPendingServices() {
+    const token = localStorage.getItem('access_token');
+    if (!token) return [];
 
-async moderateService(serviceId, status, rejectionReason = null) {
-  const token = localStorage.getItem('access_token');
-  const payload = { moderation_status: status };
-  if (rejectionReason) {
-    payload.moderation_rejection_reason = rejectionReason;
-  }
-  
-  const response = await fetch(`${API_URL}/services/${serviceId}/moderate/`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(payload)
-  });
-  return response.json();
-},
+    const response = await fetch(`${API_URL}/services/pending/`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
 
-async getUserServices() {
-  const token = localStorage.getItem('access_token');
-  if (!token) return [];
-  
-  const response = await fetch(`${API_URL}/my-services/`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
+    if (!response.ok) {
+      console.error('Error fetching pending services:', response.status);
+      return [];
     }
-  });
-  
-  if (!response.ok) return [];
-  
-  const data = await response.json();
-  return data.results || data;
-},
+
+    const data = await response.json();
+    return data.results || data;
+  },
+
+  async moderateService(serviceId, status, rejectionReason = null) {
+    const token = localStorage.getItem('access_token');
+    const payload = { moderation_status: status };
+    if (rejectionReason) {
+      payload.moderation_rejection_reason = rejectionReason;
+    }
+
+    const response = await fetch(`${API_URL}/services/${serviceId}/moderate/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+    return response.json();
+  },
+
+  async getUserServices() {
+    const token = localStorage.getItem('access_token');
+    if (!token) return [];
+
+    const response = await fetch(`${API_URL}/my-services/`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    return data.results || data;
+  },
 
 };
 

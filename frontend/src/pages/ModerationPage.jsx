@@ -11,8 +11,10 @@ const ModerationPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedService, setSelectedService] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
   const [message, setMessage] = useState('');
+  const [expandedServices, setExpandedServices] = useState({});
+  const [imageIndices, setImageIndices] = useState({});
 
   useEffect(() => {
     if (isAuthenticated && user?.is_staff) {
@@ -24,8 +26,13 @@ const ModerationPage = () => {
     setLoading(true);
     try {
       const services = await api.getPendingServices();
-      console.log('Loaded services:', services);
       setPendingServices(Array.isArray(services) ? services : []);
+      
+      const indices = {};
+      services.forEach(service => {
+        indices[service.id] = 0;
+      });
+      setImageIndices(indices);
     } catch (error) {
       console.error('Ошибка загрузки услуг:', error);
       setMessage('Ошибка загрузки услуг');
@@ -47,7 +54,7 @@ const ModerationPage = () => {
     }
   };
 
-  const handleReject = async () => {
+  const handleRejectSubmit = async () => {
     if (!rejectReason.trim()) {
       alert('Укажите причину отказа');
       return;
@@ -56,7 +63,7 @@ const ModerationPage = () => {
     try {
       await api.moderateService(selectedService.id, 'rejected', rejectReason);
       setMessage(`Услуга "${selectedService.name}" отклонена`);
-      setShowModal(false);
+      setShowRejectModal(false);
       setRejectReason('');
       setSelectedService(null);
       loadPendingServices();
@@ -65,6 +72,40 @@ const ModerationPage = () => {
       console.error('Ошибка:', error);
       setMessage('Ошибка при отклонении');
     }
+  };
+
+  const toggleExpandDescription = (serviceId) => {
+    setExpandedServices(prev => ({
+      ...prev,
+      [serviceId]: !prev[serviceId]
+    }));
+  };
+
+  const nextImage = (serviceId, imagesLength) => {
+    setImageIndices(prev => ({
+      ...prev,
+      [serviceId]: (prev[serviceId] + 1) % imagesLength
+    }));
+  };
+
+  const prevImage = (serviceId, imagesLength) => {
+    setImageIndices(prev => ({
+      ...prev,
+      [serviceId]: (prev[serviceId] - 1 + imagesLength) % imagesLength
+    }));
+  };
+
+  const getAllImages = (service) => {
+    const images = [];
+    if (service.main_image_url) {
+      images.push(service.main_image_url);
+    }
+    if (service.images) {
+      service.images.forEach(img => {
+        if (img.image_url) images.push(img.image_url);
+      });
+    }
+    return images;
   };
 
   if (!isAuthenticated) {
@@ -115,48 +156,106 @@ const ModerationPage = () => {
             </div>
           ) : (
             <div className="services-moderate-list">
-              {pendingServices.map(service => (
-                <div key={service.id} className="service-moderate-card">
-                  <div className="service-moderate-image">
-                    <img src={service.main_image_url} alt={service.name} />
+              {pendingServices.map(service => {
+                const images = getAllImages(service);
+                const currentIndex = imageIndices[service.id] || 0;
+                const isExpanded = expandedServices[service.id] || false;
+                const hasMultipleImages = images.length > 1;
+
+                return (
+                  <div key={service.id} className="service-moderate-card">
+                    {/* Карусель изображений */}
+                    <div className="service-moderate-image">
+                      {hasMultipleImages && (
+                        <button 
+                          className="carousel-nav carousel-nav--prev"
+                          onClick={() => prevImage(service.id, images.length)}
+                        >
+                          ❮
+                        </button>
+                      )}
+                      <img 
+                        src={images[currentIndex]} 
+                        alt={service.name} 
+                      />
+                      {hasMultipleImages && (
+                        <button 
+                          className="carousel-nav carousel-nav--next"
+                          onClick={() => nextImage(service.id, images.length)}
+                        >
+                          ❯
+                        </button>
+                      )}
+                      {hasMultipleImages && (
+                        <div className="carousel-dots">
+                          {images.map((_, idx) => (
+                            <span 
+                              key={idx}
+                              className={`dot ${currentIndex === idx ? 'active' : ''}`}
+                              onClick={() => setImageIndices(prev => ({ ...prev, [service.id]: idx }))}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="service-moderate-info">
+                      <h3>{service.name}</h3>
+                      <p><strong>Автор:</strong> {service.user_info?.first_name || service.user_info?.username}</p>
+                      <p><strong>Категория:</strong> {service.category_name}</p>
+                      <p><strong>Цена:</strong> {service.price} руб.</p>
+                      <p><strong>Город:</strong> {service.city}</p>
+                      <p><strong>Адрес:</strong> {service.address || 'Не указан'}</p>
+                      <p><strong>Телефон:</strong> {service.phone_number}</p>
+                      <div className="description-section">
+                        <strong>Описание:</strong>
+                        <div className={`description-text ${isExpanded ? 'expanded' : ''}`}>
+                          {service.description?.split('\n').map((paragraph, idx) => (
+                            <p key={idx}>{paragraph}</p>
+                          ))}
+                        </div>
+                        {service.description && service.description.length > 200 && (
+                          <button 
+                            className="expand-btn"
+                            onClick={() => toggleExpandDescription(service.id)}
+                          >
+                            {isExpanded ? 'Свернуть' : 'Читать полностью'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="service-moderate-actions">
+                      <button 
+                        className="btn-approve"
+                        onClick={() => handleApprove(service)}
+                      >
+                        Одобрить
+                      </button>
+                      <button 
+                        className="btn-reject"
+                        onClick={() => {
+                          setSelectedService(service);
+                          setShowRejectModal(true);
+                        }}
+                      >
+                        Отклонить
+                      </button>
+                    </div>
                   </div>
-                  <div className="service-moderate-info">
-                    <h3>{service.name}</h3>
-                    <p><strong>Автор:</strong> {service.user_info?.username}</p>
-                    <p><strong>Категория:</strong> {service.category_name}</p>
-                    <p><strong>Цена:</strong> {service.price} руб.</p>
-                    <p><strong>Город:</strong> {service.city}</p>
-                    <p><strong>Телефон:</strong> {service.phone_number}</p>
-                    <p><strong>Описание:</strong> {service.description?.slice(0, 150)}...</p>
-                  </div>
-                  <div className="service-moderate-actions">
-                    <button 
-                      className="btn-approve"
-                      onClick={() => handleApprove(service)}
-                    >
-                      Одобрить
-                    </button>
-                    <button 
-                      className="btn-reject"
-                      onClick={() => {
-                        setSelectedService(service);
-                        setShowModal(true);
-                      }}
-                    >
-                      Отклонить
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </main>
 
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+      {/* Модальное окно только для причины отказа */}
+      {showRejectModal && selectedService && (
+        <div className="modal-overlay" onClick={() => setShowRejectModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>Укажите причину отклонения</h3>
+            <p className="service-name">Услуга: {selectedService.name}</p>
             <textarea
               rows="4"
               placeholder="Почему услуга не может быть опубликована?"
@@ -164,10 +263,10 @@ const ModerationPage = () => {
               onChange={(e) => setRejectReason(e.target.value)}
             />
             <div className="modal-actions">
-              <button className="btn-cancel" onClick={() => setShowModal(false)}>
+              <button className="btn-cancel" onClick={() => setShowRejectModal(false)}>
                 Отмена
               </button>
-              <button className="btn-submit" onClick={handleReject}>
+              <button className="btn-submit" onClick={handleRejectSubmit}>
                 Отправить
               </button>
             </div>
