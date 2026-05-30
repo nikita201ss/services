@@ -189,7 +189,7 @@ img {
 }
 
 .categories-section {
-  margin-bottom: 100px;
+  margin-bottom: 70px;
 }
 
 .section-title {
@@ -493,7 +493,7 @@ img {
 }
 
 .detail-txt {
-  width: 75%;
+  font-size: 20px;
   line-height: 1.6;
 }
 
@@ -552,6 +552,10 @@ img {
 }
 .meeting-button:hover {
   background-color: #43ccc5;
+}
+
+.related-title {
+  margin: 50px 0 50px 5%;
 }
 
 .det-img-container {
@@ -2008,6 +2012,10 @@ img {
   .footer__block nav ul a {
     font-size: 18px;
   }
+  .category-card {
+    width: 370px;
+    height: 66px;
+  }
 }
 @media (max-width: 1440px) {
   .header__list a {
@@ -2212,9 +2220,7 @@ img {
     height: 100px;
   }
   .location2 {
-    flex-direction: column;
     align-items: flex-start;
-    gap: 15px;
   }
   .group-buttons {
     flex-direction: row;
@@ -2503,9 +2509,6 @@ img {
   .description {
     width: 90%;
     margin-top: 30px;
-  }
-  .detail-txt {
-    width: 100%;
   }
   .group-buttons {
     flex-direction: row;

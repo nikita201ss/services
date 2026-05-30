@@ -49,6 +49,19 @@
         font-size: 18px;
     }
 
+
+
+
+
+    .category-card {
+        width: 370px;
+        height: 66px;
+    }
+
+
+
+
+
 }
 
 @media (max-width: 1440px) {
@@ -258,7 +271,7 @@
         }
 
         &__copyright {
-            
+
             p {
                 font-size: 12px;
             }
@@ -335,9 +348,7 @@
     }
 
     .location2 {
-        flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
     }
 
     .group-buttons {
@@ -647,7 +658,6 @@
 
         .related-title {
             font-size: 20px;
-            margin-left: 5%;
         }
 
         .services-grid {
@@ -714,9 +724,7 @@
         margin-top: 30px;
     }
 
-    .detail-txt {
-        width: 100%;
-    }
+
 
     .group-buttons {
         flex-direction: row;

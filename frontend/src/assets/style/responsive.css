@@ -36,6 +36,10 @@
   .footer__block nav ul a {
     font-size: 18px;
   }
+  .category-card {
+    width: 370px;
+    height: 66px;
+  }
 }
 @media (max-width: 1440px) {
   .header__list a {
@@ -240,9 +244,7 @@
     height: 100px;
   }
   .location2 {
-    flex-direction: column;
     align-items: flex-start;
-    gap: 15px;
   }
   .group-buttons {
     flex-direction: row;
@@ -483,7 +485,6 @@
   }
   .related-services .related-title {
     font-size: 20px;
-    margin-left: 5%;
   }
   .related-services .services-grid {
     gap: 15px;
@@ -531,9 +532,6 @@
   .description {
     width: 90%;
     margin-top: 30px;
-  }
-  .detail-txt {
-    width: 100%;
   }
   .group-buttons {
     flex-direction: row;
