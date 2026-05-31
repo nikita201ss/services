@@ -56,7 +56,7 @@ img {
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    margin-bottom: 100px;
+    margin-bottom: 70px;
 
     &__logo {
         img {
@@ -158,7 +158,7 @@ img {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 100px 0px;
+    padding: 100px 0 50px 0;
     flex-direction: column;
 
     &__container {
@@ -381,11 +381,13 @@ img {
     margin: 0 auto;
 
     p {
+        font-size: 20px;
         line-height: 2;
     }
 }
 
 .about-list {
+    font-size: 20px;
     ul li {
         line-height: 2;
         list-style: circle;
@@ -1862,7 +1864,6 @@ img {
 // Стили для информационных страниц
 .page-info {
     min-height: calc(100vh - 200px);
-    padding: 40px 0;
 }
 
 .info-title {
@@ -2080,7 +2081,11 @@ img {
     }
 }
 
-
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
 // Фильтры на главной странице
 .filter-toggle {

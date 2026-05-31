@@ -333,9 +333,13 @@ img {
   margin: 0 auto;
 }
 .about-text p {
+  font-size: 20px;
   line-height: 2;
 }
 
+.about-list {
+  font-size: 20px;
+}
 .about-list ul li {
   line-height: 2;
   list-style: circle;
@@ -2461,7 +2465,6 @@ img {
   }
   .related-services .related-title {
     font-size: 20px;
-    margin-left: 5%;
   }
   .related-services .services-grid {
     gap: 15px;

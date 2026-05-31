@@ -39,28 +39,19 @@ const ServiceDetailPage = () => {
       setMainImage(data.main_image_url || `http://localhost:8000${data.main_image}`);
       setCurrentIndex(0);
 
-
       if (data.category) {
-        // Используем category_slug, если он есть
         const categorySlug = data.category_slug || data.category;
-        console.log('Category slug:', categorySlug);
-
         const filters = { category: categorySlug };
         const related = await api.getServices(filters);
         const filtered = related.filter(s => s.slug !== slug).slice(0, 4);
         setRelatedServices(filtered);
       }
-
     } catch (error) {
       console.error('Ошибка загрузки услуги:', error);
     } finally {
       setLoading(false);
     }
   }, [slug]);
-
-
-
-
 
   useEffect(() => {
     loadService();
@@ -226,7 +217,6 @@ const ServiceDetailPage = () => {
 
   const categorySlug = service.category_slug || service.category?.slug || service.category;
   const hasMultipleImages = totalImages > 1;
-
   const executorName = service.user_info?.first_name;
 
   return (

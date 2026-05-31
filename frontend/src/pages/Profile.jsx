@@ -103,7 +103,8 @@ const Profile = () => {
     return `${day}.${month}.${year} ${time}`;
   };
 
-  const displayName = user?.first_name || user?.username;
+  // Показываем имя и логин рядышком
+  const displayName = user?.first_name ? `${user.first_name} (${user.username})` : user?.username;
 
   if (!isAuthenticated) {
     return (
@@ -249,14 +250,14 @@ const Profile = () => {
                         onClick={() => handleApprove(request.id)}
                         disabled={updating}
                       >
-                        {'Одобрить'}
+                        Одобрить
                       </button>
                       <button
                         className="btn-reject"
                         onClick={() => setRejectModal({ show: true, requestId: request.id })}
                         disabled={updating}
                       >
-                        {'Отклонить'}
+                        Отклонить
                       </button>
                     </div>
                   )}
