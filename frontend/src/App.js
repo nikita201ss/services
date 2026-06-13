@@ -2,21 +2,26 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import './App.scss';
-import HomePage from './pages/HomePage';
-import AboutPage from './pages/AboutPage';
-import ServiceDetailPage from './pages/ServiceDetailPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import CreateServicePage from './pages/CreateServicePage';
-import Profile from './pages/Profile';
-import Calendar from './pages/Calendar';
-import ModerationPage from './pages/ModerationPage';
-import ClientsPage from './pages/ClientsPage';
-import PerformersPage from './pages/PerformersPage';
-import PrivacyPage from './pages/PrivacyPage';
-import TermsPage from './pages/TermsPage';
-import ConsentPage from './pages/ConsentPage';
+
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+
+import AboutPage from './pages/info/AboutPage';
+import ClientsPage from './pages/info/ClientsPage';
+import PerformersPage from './pages/info/PerformersPage';
+
+import PrivacyPage from './pages/legal/PrivacyPage';
+import TermsPage from './pages/legal/TermsPage';
+import ConsentPage from './pages/legal/ConsentPage';
+
+import HomePage from './pages/main/HomePage';
+import ServiceDetailPage from './pages/main/ServiceDetailPage';
+import CreateServicePage from './pages/main/CreateServicePage';
+import Profile from './pages/main/Profile';
+import Calendar from './pages/main/Calendar';
+import ModerationPage from './pages/main/ModerationPage';
+
 
 function App() {
   return (

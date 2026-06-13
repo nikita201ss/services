@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ServiceCard from '../components/ServiceCard';
-import { api } from '../services/api';
-import '../assets/style/styles.scss';
-import { formatPhoneNumber } from '../utils/formatPhone';
-import { useAuth } from '../contexts/AuthContext';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import ServiceCard from '../../components/ServiceCard';
+import { api } from '../../services/api';
+import '../../assets/style/styles.scss';
+import { formatPhoneNumber } from '../../utils/formatPhone';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ServiceDetailPage = () => {
   const { slug } = useParams();

@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { api } from '../services/api';
+import { useAuth } from '../../contexts/AuthContext';
+import { api } from '../../services/api';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import '../assets/style/styles.scss';
+import '../../assets/style/styles.scss';
 
 const locales = {
   'ru': ru,

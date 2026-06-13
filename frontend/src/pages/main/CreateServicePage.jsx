@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { api } from '../services/api';
-import '../assets/style/styles.scss';
+import { useAuth } from '../../contexts/AuthContext';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import { api } from '../../services/api';
+import '../../assets/style/styles.scss';
 
 const CreateServicePage = () => {
   const navigate = useNavigate();

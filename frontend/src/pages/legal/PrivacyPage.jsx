@@ -1,7 +1,7 @@
 import React from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import '../assets/style/styles.scss';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import '../../assets/style/styles.scss';
 
 const PrivacyPage = () => {
   return (

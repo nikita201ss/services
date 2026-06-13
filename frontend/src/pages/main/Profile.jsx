@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { useAuth } from '../contexts/AuthContext';
-import { api } from '../services/api';
-import '../assets/style/styles.scss';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import { useAuth } from '../../contexts/AuthContext';
+import { api } from '../../services/api';
+import '../../assets/style/styles.scss';
 
 const Profile = () => {
   const { user, isAuthenticated } = useAuth();

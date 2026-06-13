@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import CategoryCard from '../components/CategoryCard';
-import ServiceCard from '../components/ServiceCard';
-import { api } from '../services/api';
-import '../assets/style/styles.scss';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import CategoryCard from '../../components/CategoryCard';
+import ServiceCard from '../../components/ServiceCard';
+import { api } from '../../services/api';
+import '../../assets/style/styles.scss';
 
 const HomePage = () => {
   const [categories, setCategories] = useState([]);

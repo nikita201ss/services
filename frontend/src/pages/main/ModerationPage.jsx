@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { useAuth } from '../contexts/AuthContext';
-import { api } from '../services/api';
-import '../assets/style/styles.scss';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import { useAuth } from '../../contexts/AuthContext';
+import { api } from '../../services/api';
+import '../../assets/style/styles.scss';
 
 const ModerationPage = () => {
   const { user, isAuthenticated } = useAuth();
