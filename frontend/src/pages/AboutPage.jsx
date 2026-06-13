@@ -89,8 +89,8 @@ const AboutPage = () => {
               <div className="contact-item">
                 <div className="contact-info">
                   <h4>Email</h4>
-                  <a href="mailto:support@services.ru">support@services.ru</a>
-                  <p>По вопросам сотрудничества</p>
+                  <a href="mailto:services@sayut.ru">services@sayut.ru</a>
+                  <p>По всем вопросам</p>
                 </div>
               </div>
 

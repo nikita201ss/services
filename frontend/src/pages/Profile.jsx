@@ -16,6 +16,7 @@ const Profile = () => {
   const [rejectModal, setRejectModal] = useState({ show: false, requestId: null });
   const [rejectReason, setRejectReason] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -103,8 +104,38 @@ const Profile = () => {
     return `${day}.${month}.${year} ${time}`;
   };
 
-  // Показываем имя и логин рядышком
   const displayName = user?.first_name ? `${user.first_name} (${user.username})` : user?.username;
+
+  const handleDeleteService = async (serviceId) => {
+    if (!window.confirm('Вы уверены, что хотите отменить эту услугу? Она будет удалена без возможности восстановления.')) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`/api/services/${serviceId}/delete/`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        alert('Услуга успешно удалена');
+        loadUserServices();
+      } else {
+        alert('Ошибка при удалении услуги');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка при удалении услуги');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+
 
   if (!isAuthenticated) {
     return (
@@ -205,9 +236,17 @@ const Profile = () => {
                     )}
                   </div>
 
-                  <Link to={`/service/${service.slug}`} className="request-link">
-                    Посмотреть услугу
-                  </Link>
+                  <div className="request-actions del-serv">
+                    <Link to={`/service/${service.slug}`} className="request-link">
+                      Посмотреть услугу
+                    </Link>
+                    <button
+                      className="btn-delete" onClick={() => handleDeleteService(service.id)} disabled={deleting}>
+                      {deleting ? 'Удаление...' : 'Отменить услугу'}
+                    </button>
+                  </div>
+
+
                 </div>
               ))
             ) : (

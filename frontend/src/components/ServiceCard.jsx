@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import '../assets/style/styles.scss';
 
 const ServiceCard = ({ service }) => {
-    const imageUrl = service.main_image_url || `http://localhost:8000${service.main_image}`;
+    const imageUrl = service.main_image_url || `${service.main_image}`;
     
     return (
         <div className="service-card">
@@ -12,9 +12,6 @@ const ServiceCard = ({ service }) => {
                     <img
                         src={imageUrl}
                         alt={service.name}
-                        onError={(e) => {
-                            e.target.src = '/static/images/placeholder.jpg';
-                        }}
                     />
                 </div>
                 <div className="service-card__content">

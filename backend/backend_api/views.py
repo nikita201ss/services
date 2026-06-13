@@ -188,3 +188,15 @@ class PendingServicesAPIView(generics.ListAPIView):
     
     def get_queryset(self):
         return Service.objects.filter(moderation_status='pending').order_by('-created_at')
+    
+class ServiceDeleteAPIView(generics.DestroyAPIView):
+    serializer_class = ServiceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Service.objects.filter(user=self.request.user)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=204)

@@ -21,7 +21,8 @@ const CreateServicePage = () => {
     phone_number: '',
     category: '',
     main_image: null,
-    extra_images: []
+    extra_images: [],
+    price_from: false,
   });
 
   useEffect(() => {
@@ -140,6 +141,7 @@ const CreateServicePage = () => {
       const submitData = new FormData();
       submitData.append('name', formData.name);
       submitData.append('price', formData.price);
+      submitData.append('price_from', formData.price_from);
       submitData.append('description', formData.description);
       submitData.append('city', formData.city);
       submitData.append('address', formData.address || '');
@@ -152,7 +154,7 @@ const CreateServicePage = () => {
       });
 
       const token = localStorage.getItem('access_token');
-      const response = await fetch('http://localhost:8000/api/services/create/', {
+      const response = await fetch('/api/services/create/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -211,7 +213,22 @@ const CreateServicePage = () => {
                   </div>
 
                   <div className="group">
+
+                    <div className='double-group'>
                     <label htmlFor="price">Цена (руб.)</label>
+                    <label className="price-dop">
+                      <span>Приставка "от" к цене</span>
+                      <input
+                        type="checkbox"
+                        name="price_from"
+                        checked={formData.price_from}
+                        onChange={(e) => setFormData(prev => ({ ...prev, price_from: e.target.checked }))}
+                      />
+                      
+                    </label>
+                    </div>
+
+
                     <input
                       type="number"
                       id="price"

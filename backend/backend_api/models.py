@@ -72,7 +72,8 @@ class Service(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     city = models.CharField(max_length=100, blank=True, verbose_name="Город")
     address = models.CharField(max_length=255, blank=True, verbose_name="Адрес")
-    
+    price_from = models.BooleanField(default=False, verbose_name="Цена от")
+
     moderation_status = models.CharField(max_length=20, choices=MODERATION_STATUS_CHOICES, default='pending')
     moderation_rejection_reason = models.TextField(blank=True, null=True, verbose_name="Причина отклонения")
     moderated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="moderated_services")

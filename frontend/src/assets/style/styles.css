@@ -52,7 +52,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  margin-bottom: 100px;
+  margin-bottom: 70px;
 }
 .panel__logo img {
   max-width: 100%;
@@ -141,7 +141,7 @@ img {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 100px 0px;
+  padding: 100px 0 50px 0;
   flex-direction: column;
 }
 .footer__container {
@@ -691,6 +691,13 @@ img {
   flex-direction: column;
 }
 
+.group-label {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .btn-create {
   font-size: 20px;
   color: white;
@@ -735,6 +742,38 @@ img {
   flex-direction: column;
   gap: 5%;
   width: 36%;
+}
+
+.double-group {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  gap: 5%;
+  justify-content: space-between;
+}
+
+.price-dop {
+  text-align: center;
+  gap: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.price-dop > span {
+  font-size: 12px;
+}
+
+.btn-delete {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 1% 1.2%;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.del-serv {
+  justify-content: space-between;
 }
 
 .window,
@@ -1579,7 +1618,6 @@ img {
 
 .page-info {
   min-height: calc(100vh - 200px);
-  padding: 40px 0;
 }
 
 .info-title {
@@ -1769,6 +1807,12 @@ img {
 }
 .checkbox-group .checkbox-label span a:hover {
   text-decoration: underline;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .filter-toggle {
@@ -1995,6 +2039,7 @@ img {
   .auth-buttons__login, .auth-buttons__register, .auth-buttons__logout, .auth-buttons__user {
     width: 180px;
     height: 65px;
+    text-align: center;
   }
   .auth-buttons__login p,
   .auth-buttons__login a,

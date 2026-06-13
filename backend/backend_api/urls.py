@@ -9,7 +9,8 @@ urlpatterns = [
     
     path('services/pending/', views.PendingServicesAPIView.as_view(), name='pending-services'),
     path('services/create/', views.ServiceCreateAPIView.as_view(), name='service-create'),
-    
+    path('services/<int:pk>/delete/', views.ServiceDeleteAPIView.as_view(), name='service-delete'),
+
     path('services/', views.ServiceListAPIView.as_view(), name='services'),
 
     path('services/<slug:slug>/', views.ServiceDetailAPIView.as_view(), name='service-detail'),

@@ -36,7 +36,7 @@ const ServiceDetailPage = () => {
     try {
       const data = await api.getServiceBySlug(slug);
       setService(data);
-      setMainImage(data.main_image_url || `http://localhost:8000${data.main_image}`);
+      setMainImage(data.main_image_url || `${data.main_image}`);
       setCurrentIndex(0);
 
       if (data.category) {
@@ -60,11 +60,11 @@ const ServiceDetailPage = () => {
   const getAllImages = () => {
     const images = [];
     if (service?.main_image) {
-      images.push(service.main_image_url || `http://localhost:8000${service.main_image}`);
+      images.push(service.main_image_url || `${service.main_image}`);
     }
     if (service?.images) {
       service.images.forEach(img => {
-        const imgUrl = img.image_url || `http://localhost:8000${img.image}`;
+        const imgUrl = img.image_url || `${img.image}`;
         images.push(imgUrl);
       });
     }
@@ -325,7 +325,7 @@ const ServiceDetailPage = () => {
 
             <div className="description">
               <h2>{service.name}</h2>
-              <p className="price">{service.price} руб.</p>
+              <p className="price">{service.price_from ? 'от ' : ''}{service.price} руб.</p>
               <p className="description-title"><b>Описание</b></p>
               <div className="detail-txt">
                 {service.description?.split('\n').map((paragraph, idx) => (

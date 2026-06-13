@@ -388,6 +388,7 @@ img {
 
 .about-list {
     font-size: 20px;
+
     ul li {
         line-height: 2;
         list-style: circle;
@@ -779,6 +780,13 @@ img {
     flex-direction: column;
 }
 
+.group-label {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .btn-create {
     font-size: 20px;
     color: white;
@@ -823,6 +831,38 @@ img {
     flex-direction: column;
     gap: 5%;
     width: 36%;
+}
+
+.double-group {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    gap: 5%;
+    justify-content: space-between;
+}
+
+.price-dop {
+    text-align: center;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.price-dop>span {
+    font-size: 12px;
+}
+
+.btn-delete {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 1% 1.2%;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.del-serv {
+    justify-content: space-between;
 }
 
 

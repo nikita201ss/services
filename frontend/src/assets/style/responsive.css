@@ -15,6 +15,7 @@
   .auth-buttons__login, .auth-buttons__register, .auth-buttons__logout, .auth-buttons__user {
     width: 180px;
     height: 65px;
+    text-align: center;
   }
   .auth-buttons__login p,
   .auth-buttons__login a,

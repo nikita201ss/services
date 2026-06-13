@@ -80,7 +80,7 @@ class ServiceSerializer(serializers.ModelSerializer):
             'id', 'name', 'slug', 'main_image', 'main_image_url', 'category', 'category_name', 'category_slug',
             'phone_number', 'price', 'description', 'city', 'address',
             'created_at', 'updated_at', 'images', 'uploaded_images', 'user_info', 'user',
-            'moderation_status', 'moderation_status_display', 'moderation_rejection_reason'
+            'moderation_status', 'moderation_status_display', 'moderation_rejection_reason', 'price_from'
         ]
         read_only_fields = ['id', 'slug', 'created_at', 'updated_at', 'user', 'moderation_status']
 
